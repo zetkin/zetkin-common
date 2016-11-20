@@ -15,7 +15,7 @@ import cx from 'classnames';
 @injectIntl
 export default class CampaignForm extends React.Component {
     static propTypes = {
-        redirPath: PropTypes.string.isRequired,
+        redirPath: PropTypes.string,
         actionList: PropTypes.complexList.isRequired,
         userActionList: PropTypes.complexList.isRequired,
         responseList: PropTypes.complexList.isRequired,

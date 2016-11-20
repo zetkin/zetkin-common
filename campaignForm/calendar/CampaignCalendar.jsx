@@ -36,6 +36,11 @@ export default class CampaignCalendar extends React.Component {
             endDate = new Date(actions.last().get('end_time'));
         }
 
+        if (!startDate || !endDate) {
+            // Don't render calendar if there are no actions
+            return null;
+        }
+
         // Always start on previous Monday
         let startDay = startDate.getDay();
         startDate.setDate(startDate.getDate() + 1 - (startDay? startDay : 7));
