@@ -4,9 +4,10 @@ applications.
 
 ## Components in this repository
 
-### `CampaignForm`
-The component used to render the sign-up form for campaigns, used in the Zetkin
-activist portal and in the caller interface.
+* Campaign sign-up form (`CampaignForm`)
+* General-purpose, localized button (`Button`)
+* General-purpose, localized link (`FormattedLink`)
+* Loading indicator (`LoadingIndicator`)
 
 ## The Zetkin applications
 The applications that may or may not use one or several of the components in
