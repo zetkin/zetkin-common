@@ -24,7 +24,7 @@ export default class Button extends React.Component {
         if (href) {
             return (
                 <FormattedLink href={ href }
-                    className={ this.props.className }
+                    className={ classes }
                     msgId={ msgId }
                     msgValues={ this.props.labelValues }
                     onClick={ this.props.onClick }/>
