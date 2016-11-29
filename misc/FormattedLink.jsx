@@ -36,6 +36,7 @@ export default class FormattedLink extends React.Component {
         else {
             return (
                 <Link className={ this.props.className }
+                    onClick={ this.props.onClick }
                     to={ href }>{ msg }</Link>
             );
         }
