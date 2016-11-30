@@ -11,6 +11,7 @@ export default class FormattedLink extends React.Component {
         href: React.PropTypes.string,
         onClick: React.PropTypes.func,
         className: React.PropTypes.string,
+        target: React.PropTypes.string,
     };
 
     render() {
@@ -27,6 +28,7 @@ export default class FormattedLink extends React.Component {
 
             return (
                 <a href={ href }
+                    target={ this.props.target }
                     className={ this.props.className }
                     onClick={ this.props.onClick }>
                     { msg }
