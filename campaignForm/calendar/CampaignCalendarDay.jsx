@@ -5,6 +5,7 @@ import cx from 'classnames';
 export default class CampaignCalendarDay extends React.Component {
     static propTypes = {
         numActions: React.PropTypes.number.isRequired,
+        onClick: React.PropTypes.func.isRequired,
         hasBookings: React.PropTypes.bool,
     };
 
@@ -40,12 +41,6 @@ export default class CampaignCalendarDay extends React.Component {
     onClick(fragment, ev) {
         ev.preventDefault();
 
-        let target = document.getElementById(fragment);
-        let rect = target.getBoundingClientRect();
-        let scrollTop = rect.top;
-
-        let animatedScrollTo = require('animated-scrollto');
-        let duration = 200 + scrollTop / 15;
-        animatedScrollTo(document.body, scrollTop, duration);
+        this.props.onClick(fragment);
     }
 }

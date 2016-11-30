@@ -20,6 +20,7 @@ export default class CampaignForm extends React.Component {
         userActionList: PropTypes.complexList.isRequired,
         responseList: PropTypes.complexList.isRequired,
         onResponse: PropTypes.func,
+        scrollContainer: PropTypes.any,
     };
 
     constructor(props) {
@@ -278,6 +279,7 @@ export default class CampaignForm extends React.Component {
             return (
                 <div className="CampaignForm">
                     <CampaignCalendar
+                        onSelectDay={ this.onCalendarSelectDay.bind(this) }
                         className="CampaignForm-calendar"
                         actions={ allActions }
                         responses={ responses }
@@ -306,6 +308,19 @@ export default class CampaignForm extends React.Component {
         else {
             return null;
         }
+    }
+
+    onCalendarSelectDay(fragment) {
+        let container = this.props.scrollContainer || document.body;
+
+        let target = document.getElementById(fragment);
+        let rect = target.getBoundingClientRect();
+        let scrollTop = rect.top;
+
+        let animatedScrollTo = require('animated-scrollto');
+        let duration = 200 + scrollTop / 15;
+
+        animatedScrollTo(container, scrollTop, duration);
     }
 
     onFilterChange(type, selected) {

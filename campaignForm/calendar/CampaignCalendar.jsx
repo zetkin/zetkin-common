@@ -14,6 +14,7 @@ export default class CampaignCalendar extends React.Component {
         bookings: PropTypes.list.isRequired,
         startDate: PropTypes.object,
         endDate: PropTypes.object,
+        onSelectDay: PropTypes.func.isRequired,
     };
 
     render() {
@@ -91,6 +92,7 @@ export default class CampaignCalendar extends React.Component {
                     numActions={ numDayActions }
                     hasBookings={ hasBookings }
                     hasResponses={ hasResponses }
+                    onClick={ this.onDayClick.bind(this) }
                     />
             );
 
@@ -126,5 +128,11 @@ export default class CampaignCalendar extends React.Component {
                 { weeks }
             </div>
         );
+    }
+
+    onDayClick(fragment) {
+        if (this.props.onSelectDay) {
+            this.props.onSelectDay(fragment);
+        }
     }
 }
