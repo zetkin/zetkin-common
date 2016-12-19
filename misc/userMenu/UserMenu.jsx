@@ -24,22 +24,33 @@ export default class UserContinueButton extends React.Component {
     }
 
     render() {
+        const domain = process.env.ZETKIN_DOMAIN;
         const userData = this.props.user;
         const dropDownOpen = this.state.dropDownOpen;
         const firstName = userData.get('first_name');
         const lastName = userData.get('last_name');
         const userId = userData.get('id');
-        const avatarDomain = '//api.' + process.env.ZETKIN_DOMAIN;
+        const avatarDomain = '//api.' + domain;
         const avatarSrc = avatarDomain + '/v1/users/' + userId + '/avatar';
         const avatarStyle = {backgroundImage: 'url("' + avatarSrc + '")'}
         const compClasses = cx('UserMenu', { 'UserMenu-expanded': dropDownOpen });
-        const logoutUrl = '//www.' + process.env.ZETKIN_DOMAIN + '/logout';
         let dropDown = null;
 
         if (dropDownOpen) {
+            const settingsUrl = '//www.' + domain + '/settings';
+            const logoutUrl = '//www.' + domain + '/logout';
+
             dropDown = <ul className="UserMenu-dropDown">
-                <li><FormattedLink className="UserMenu-settings" href="/settings" msgId="header.user.settings">Settings</FormattedLink></li>
-                <li><FormattedLink className="UserMenu-logout" href={logoutUrl} msgId="header.user.logout">Log out</FormattedLink></li>
+                <li>
+                    <FormattedLink className="UserMenu-settings"
+                        href={ settingsUrl }
+                        msgId="header.user.settings"/>
+                </li>
+                <li>
+                    <FormattedLink className="UserMenu-logout"
+                        href={logoutUrl}
+                        msgId="header.user.logout"/>
+                </li>
             </ul>
         }
 
