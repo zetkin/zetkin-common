@@ -38,7 +38,7 @@ export default class UserContinueButton extends React.Component {
 
         if (dropDownOpen) {
             const settingsUrl = '//www.' + domain + '/settings';
-            const logoutUrl = '//www.' + domain + '/logout';
+            const logoutUrl = '/logout';
 
             dropDown = <ul className="UserMenu-dropDown">
                 <li>
