@@ -12,6 +12,7 @@ export default class FormattedLink extends React.Component {
         onClick: React.PropTypes.func,
         className: React.PropTypes.string,
         target: React.PropTypes.string,
+        forceRefresh: React.PropTypes.bool,
     };
 
     render() {
@@ -20,7 +21,9 @@ export default class FormattedLink extends React.Component {
         let formatMessage = this.props.intl.formatMessage;
         let msg = formatMessage({ id }, this.props.msgValues);
 
-        if (!href || href.indexOf('//') === 0 || href.indexOf('http') === 0) {
+        if (this.props.forceRefresh || !href || href.indexOf('//') === 0
+            || href.indexOf('http') === 0) {
+
             if (href && href.indexOf('//') === 0) {
                 href = ((process.env.NODE_ENV === 'production')?
                     'https:' : 'http:') + href;
