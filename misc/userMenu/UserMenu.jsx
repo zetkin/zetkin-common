@@ -38,7 +38,6 @@ export default class UserContinueButton extends React.Component {
 
         if (dropDownOpen) {
             const settingsUrl = '//www.' + domain + '/settings';
-            const logoutUrl = '/logout';
 
             dropDown = <ul className="UserMenu-dropDown">
                 <li>
@@ -48,7 +47,8 @@ export default class UserContinueButton extends React.Component {
                 </li>
                 <li>
                     <FormattedLink className="UserMenu-logout"
-                        href={logoutUrl}
+                        href="/logout"
+                        forceRefresh={ true }
                         msgId="header.user.logout"/>
                 </li>
             </ul>
