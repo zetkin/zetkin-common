@@ -14,10 +14,6 @@ export default class CampaignFilterList extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            viewMode: 'contracted',
-        };
     }
 
     render() {
@@ -36,21 +32,12 @@ export default class CampaignFilterList extends React.Component {
             );
         });
 
-        let classes = cx('CampaignFilterList', {
-            contracted: this.state.viewMode === 'contracted',
-            expanded: this.state.viewMode === 'expanded',
-        });
+        let classes = cx('CampaignFilterList');
 
         let count = Object.keys(options).length;
 
         return (
             <div className={ classes }>
-                <Link key="campaignLink"
-                    className="CampaignFilterList-toggle"
-                    msgId={ this.props.headerMsg }
-                    msgValues={{ count }}
-                    onClick={ this.onClickToggle.bind(this) }/>
-
                 <ul className="CampaignFilterList-list">
                     { items }
                 </ul>
@@ -74,12 +61,5 @@ export default class CampaignFilterList extends React.Component {
 
             this.props.onChange(selectedIds);
         }
-    }
-
-    onClickToggle(ev) {
-        this.setState({
-            viewMode: (this.state.viewMode === 'contracted')?
-                'expanded' : 'contracted',
-        });
     }
 }

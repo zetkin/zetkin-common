@@ -1,0 +1,19 @@
+.CampaignFilterHeader {
+    //TODO: Update with new button mixin
+    @include button($color:darken(white, 5));
+    font-size: 0.8em;
+    padding: 0 1.5em;
+    margin: 0 0.5em 0.5em 0;
+    cursor: pointer;
+
+    &:after {
+        @include icon($fa-var-chevron-down);
+    }
+
+    &.selected {
+        &:after {
+            @include icon($fa-var-chevron-up);
+        }
+    }
+
+}

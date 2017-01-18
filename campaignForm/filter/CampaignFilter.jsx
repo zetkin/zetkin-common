@@ -2,6 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import { FormattedMessage as Msg } from 'react-intl';
 
+import CampaignFilterHeader from './CampaignFilterHeader';
 import CampaignFilterList from './CampaignFilterList';
 import PropTypes from '../../../utils/PropTypes';
 
@@ -15,10 +16,19 @@ export default class CampaignFilter extends React.Component {
         onChange: PropTypes.func,
     };
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            expandedFilter: null,
+        };
+    }
+
     render() {
         let campaigns = {};
         let locations = {};
         let activities = {};
+        let expandedFilter = this.state.expandedFilter;
 
         this.props.actions.forEach(action => {
             let activity = action.get('activity');
@@ -30,48 +40,77 @@ export default class CampaignFilter extends React.Component {
             locations[location.get('id')] = location.get('title');
         });
 
+        let content = null;
         let filters = [];
 
         if (Object.keys(campaigns).length > 1) {
             filters.push(
-                <CampaignFilterList key="campaignFilter"
-                    options={ campaigns }
-                    headerMsg="campaignForm.filter.campaigns.h"
-                    selectedIds={ this.props.selectedCampaigns }
-                    onChange={ this.onChange.bind(this, 'campaigns') }
+                <CampaignFilterHeader key="campaignFilter"
+                    selected={ expandedFilter == 'campaigns' }
+                    selectedCount={ this.props.selectedCampaigns.length }
+                    msgId="campaignForm.filter.campaigns.h"
+                    onToggle={ this.onToggle.bind(this, 'campaigns') }
                     />
             );
         }
 
         if (Object.keys(locations).length > 1) {
             filters.push(
-                <CampaignFilterList key="locationFilter"
-                    options={ locations }
-                    headerMsg="campaignForm.filter.locations.h"
-                    selectedIds={ this.props.selectedLocations }
-                    onChange={ this.onChange.bind(this, 'locations') }
+                <CampaignFilterHeader key="locationFilter"
+                    selected={ expandedFilter == 'locations' }
+                    selectedCount={ this.props.selectedLocations.length }
+                    msgId="campaignForm.filter.locations.h"
+                    onToggle={ this.onToggle.bind(this, 'locations') }
                     />
             );
         }
 
         if (Object.keys(activities).length > 1) {
             filters.push(
-                <CampaignFilterList key="activityFilter"
-                    options={ activities }
-                    headerMsg="campaignForm.filter.activities.h"
-                    selectedIds={ this.props.selectedActivities }
-                    onChange={ this.onChange.bind(this, 'activities') }
+                <CampaignFilterHeader key="activityFilter"
+                    selected={ expandedFilter == 'activities' }
+                    selectedCount={ this.props.selectedActivities.length }
+                    msgId="campaignForm.filter.activities.h"
+                    onToggle={ this.onToggle.bind(this, 'activities') }
                     />
             );
         }
 
-        let classes = cx('CampaignFilter', this.props.className);
+        if (expandedFilter) {
+            let options, selected;
+            switch (expandedFilter) {
+                case 'activities':
+                    options = activities;
+                    selected = this.props.selectedActivities;
+                    break;
+                case 'campaigns':
+                    options = campaigns;
+                    selected = this.props.selectedCampaigns;
+                case 'locations':
+                    options = locations;
+                    selected = this.props.selectedLocations;
+                    break;
+            }
+
+            content = (
+                <CampaignFilterList
+                    options={ options }
+                    selectedIds={ selected }
+                    onChange={ this.onChange.bind(this, expandedFilter) }
+                    />
+            );
+        }
+
+        let classes = cx('CampaignFilter', this.props.className, {
+            'expanded': !!expandedFilter,
+        });
 
         return (
             <div className={ classes }>
-                <Msg tagName="h3"
-                    id="campaignForm.filter.h"/>
                 { filters }
+                <div className="CampaignFilter-options">
+                    { content }
+                </div>
             </div>
         );
     }
@@ -80,5 +119,11 @@ export default class CampaignFilter extends React.Component {
         if (this.props.onChange) {
             this.props.onChange(type, selected);
         }
+    }
+
+    onToggle(type, expanded) {
+        this.setState({
+            expandedFilter: expanded? type : null,
+        });
     }
 }
