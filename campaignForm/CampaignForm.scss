@@ -37,6 +37,7 @@
             border-radius: 50%;
             position: absolute;
             margin-left: -2.6em;
+            top: 40%;
             top: calc(50% - 0.5em);
             box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
         }
@@ -101,7 +102,7 @@
     }
 }
 
-@include large-screen {
+@include large-screen, target-ie-6-7-8 {
     .CampaignForm-calendar {
         @include col(3,12);
         @include col-offset(0, 12);
@@ -128,5 +129,11 @@
                 margin-left: -6em;
             }
         }
+    }
+}
+
+@include target-ie-6-7 {
+    .CampaignForm-calendar {
+        display: none;
     }
 }

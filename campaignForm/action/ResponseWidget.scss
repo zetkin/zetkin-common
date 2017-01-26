@@ -1,6 +1,7 @@
 .ResponseWidget {
     position: absolute;
     right: 1em;
+    bottom: 40%;
     bottom: calc(50% - 1em);
     color: $c-brand-main;
 
@@ -33,6 +34,13 @@
             height: 1.5em;
             width: 1.5em;
             margin: 0;
+        }
+
+        @include target-ie-6-7-8 {
+            display: block;
+            & + label {
+                display: none;
+            }
         }
     }
 }

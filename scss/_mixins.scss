@@ -1,0 +1,30 @@
+// Exploiting IE bugs to target specific versions
+@mixin target-ie-6-7 {
+    @media screen\9 {
+        @content;
+    }
+}
+
+@mixin target-ie-6-7-8 {
+    @media \0screen\,screen\9 {
+        @content;
+    }
+}
+
+@mixin target-ie-8 {
+    @media \0screen {
+        @content;
+    }
+}
+
+@mixin target-ie-8-9-10 {
+    @media screen\0 {
+        @content;
+    }
+}
+
+@mixin target-ie-8-9-10 {
+    @media screen and (min-width:0\0) {
+        @content;
+    }
+}
