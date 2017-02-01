@@ -102,7 +102,7 @@
     }
 }
 
-@include large-screen {
+@mixin large {
     .CampaignForm-calendar {
         @include col(4,12);
         @include col-offset(0, 12);
@@ -132,6 +132,15 @@
         }
     }
 }
+
+@include large-screen {
+    @include large;
+}
+
+@include target-ie-6-7-8 {
+    @include large;
+}
+
 
 @include target-ie-6-7 {
     .CampaignForm-calendar {
