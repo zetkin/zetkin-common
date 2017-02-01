@@ -102,11 +102,12 @@
     }
 }
 
-@include large-screen, target-ie-6-7-8 {
+@include large-screen {
     .CampaignForm-calendar {
-        @include col(3,12);
+        @include col(4,12);
         @include col-offset(0, 12);
         padding-left: 2em;
+        padding-right: percentage(1/12);
         float: left;
         position: absolute;
         left: 0;
@@ -119,10 +120,10 @@
 
     .CampaignForm-form {
         @include col(5,12);
-        @include col-offset(3, 12);
+        @include col-offset(4, 12);
     }
     .CampaignForm-days {
-        margin-left: 6em;
+        margin-left: 0;
 
         .CampaignForm-day {
             .CampaignForm-date {
