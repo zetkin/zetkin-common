@@ -87,8 +87,16 @@
             position: absolute;
             margin-left: 1em;
             margin-top: -1em;
-            text-align: right;
-            font-size: 0.8em;
+            text-align: center;
+
+            span {
+                font-size: 1.0em;
+                display: block;
+            }
+
+            span + span {
+                font-size: 0.8em;
+            }
         }
     }
 }

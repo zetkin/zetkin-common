@@ -1,5 +1,5 @@
 import immutable from 'immutable';
-import { injectIntl } from 'react-intl';
+import { FormattedDate, injectIntl } from 'react-intl';
 import React from 'react';
 
 import CampaignCalendar from './calendar/CampaignCalendar';
@@ -242,13 +242,19 @@ export default class CampaignForm extends React.Component {
                 let action = actions.toList().get(0);
                 let startTime = Date.create(action.get('start_time'),
                     { fromUTC: true, setUTC: true });
-                let date = startTime.format('{dd}/{MM}')
                 let dateId = startTime.format('{yyyy}-{MM}-{dd}');
 
                 return (
                     <li className="CampaignForm-day" key={ key }>
                         <div id={ dateId }
-                            className="CampaignForm-date">{ date }</div>
+                            className="CampaignForm-date">
+                            <FormattedDate
+                                day="numeric" month="numeric"
+                                value={ startTime }/>
+                            <FormattedDate
+                                weekday="long"
+                                value={ startTime }/>
+                        </div>
                         <ul className="CampaignForm-actions">
                             { actionComponents }
                         </ul>
