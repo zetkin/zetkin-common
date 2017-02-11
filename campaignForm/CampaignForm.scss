@@ -91,7 +91,7 @@
 
             span {
                 font-size: 1.0em;
-                display: block;
+                margin-right: 1em;
             }
 
             span + span {
@@ -136,6 +136,11 @@
         .CampaignForm-day {
             .CampaignForm-date {
                 margin-left: -6em;
+
+                span {
+                    margin: 0;
+                    display: block;
+                }
             }
         }
     }
