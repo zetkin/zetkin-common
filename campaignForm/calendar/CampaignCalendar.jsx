@@ -47,7 +47,9 @@ export default class CampaignCalendar extends React.Component {
         startDate.setDate(startDate.getDate() + 1 - (startDay? startDay : 7));
 
         // Always end on next Sunday
-        endDate.setDate(endDate.getDate() + (7 - endDate.getDay()));
+        if (endDate.getDay() != 0) {
+            endDate.setDate(endDate.getDate() + (7 - endDate.getDay()));
+        }
 
         // Don't show calendar when actions span less than seven days
         let duration = endDate.getTime() - startDate.getTime();
