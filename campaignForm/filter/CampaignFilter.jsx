@@ -86,6 +86,7 @@ export default class CampaignFilter extends React.Component {
                 case 'campaigns':
                     options = campaigns;
                     selected = this.props.selectedCampaigns;
+                    break;
                 case 'locations':
                     options = locations;
                     selected = this.props.selectedLocations;
