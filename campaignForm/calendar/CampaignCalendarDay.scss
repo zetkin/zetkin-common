@@ -22,7 +22,7 @@
         position: absolute;
         display: block;
         @include button-color(darken(white, 10), 2);
-        border: 1px solid #dcdcdc;
+        border: 1px solid darken(white, 20);
         transition: all 0.5s;
         border-radius: 50%;
         height: 50%;
