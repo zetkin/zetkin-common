@@ -318,10 +318,11 @@ export default class CampaignForm extends React.Component {
 
     onCalendarSelectDay(fragment) {
         let container = this.props.scrollContainer || document.body;
+        let offset = parseInt(this.props.scrollOffset) || 0;
 
         let target = document.getElementById(fragment);
         let rect = target.getBoundingClientRect();
-        let scrollTop = rect.top;
+        let scrollTop = rect.top + offset;
 
         let animatedScrollTo = require('animated-scrollto');
         let duration = 200 + scrollTop / 15;
