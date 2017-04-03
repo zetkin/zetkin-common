@@ -317,8 +317,8 @@ export default class CampaignForm extends React.Component {
     }
 
     onCalendarSelectDay(fragment) {
-        let container = this.props.scrollContainer || document.body;
         let offset = parseInt(this.props.scrollOffset) || 0;
+        let container = this.props.scrollContainer;
 
         let target = document.getElementById(fragment);
         let rect = target.getBoundingClientRect();
@@ -327,7 +327,14 @@ export default class CampaignForm extends React.Component {
         let animatedScrollTo = require('animated-scrollto');
         let duration = 200 + scrollTop / 15;
 
-        animatedScrollTo(container, scrollTop, duration);
+        if (container) {
+            animatedScrollTo(container, scrollTop, duration);
+        }
+        else {
+            // Scroll both body and document for cross-browser compatibility
+            animatedScrollTo(document.body, scrollTop, duration);
+            animatedScrollTo(document.documentElement, scrollTop, duration);
+        }
     }
 
     onFilterChange(type, selected) {
