@@ -33,36 +33,33 @@ export default class UserContinueButton extends React.Component {
         const avatarDomain = '//api.' + domain;
         const avatarSrc = avatarDomain + '/v1/users/' + userId + '/avatar';
         const avatarStyle = {backgroundImage: 'url("' + avatarSrc + '")'}
-        const compClasses = cx('UserMenu', { 'UserMenu-expanded': dropDownOpen });
-        let dropDown = null;
-
-        if (dropDownOpen) {
-            const settingsUrl = '//www.' + domain + '/settings';
-
-            dropDown = <ul className="UserMenu-dropDown">
-                <li>
-                    <FormattedLink className="UserMenu-settings"
-                        href={ settingsUrl }
-                        msgId="header.user.settings"/>
-                </li>
-                <li>
-                    <FormattedLink className="UserMenu-logout"
-                        href="/logout"
-                        forceRefresh={ true }
-                        msgId="header.user.logout"/>
-                </li>
-            </ul>
-        }
+        const settingsUrl = '//www.' + domain + '/settings';
+        const classes = cx('UserMenu', {
+            expanded: dropDownOpen
+        });
 
         return (
-            <div className={compClasses} onClick={this.toggleDropDown.bind(this)}>
+            <div className={ classes }
+                onClick={ this.toggleDropDown.bind(this) }>
                 <div className="UserMenu-user">
                     <div className="UserMenu-avatar" style={avatarStyle}></div>
                     <div className="UserMenu-name">
                         { firstName + ' ' + lastName }
                     </div>
                 </div>
-                { dropDown }
+                <ul className="UserMenu-dropDown">
+                    <li>
+                        <FormattedLink className="UserMenu-settings"
+                            href={ settingsUrl }
+                            msgId="header.user.settings"/>
+                    </li>
+                    <li>
+                        <FormattedLink className="UserMenu-logout"
+                            href="/logout"
+                            forceRefresh={ true }
+                            msgId="header.user.logout"/>
+                    </li>
+                </ul>
             </div>
         );
     }
