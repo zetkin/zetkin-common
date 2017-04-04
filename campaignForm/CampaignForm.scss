@@ -61,6 +61,12 @@
                 list-style: none;
             }
         }
+
+        &:hover {
+            .ResponseWidget .ResponseWidget-checkbox + label:before {
+                color: rgba($c-brand-main, 0.1);
+            }
+        }
     }
 }
 .CampaignForm-days {

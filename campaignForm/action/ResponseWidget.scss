@@ -1,39 +1,59 @@
 .ResponseWidget {
     position: absolute;
-    right: 1em;
+    right: 1.5em;
     bottom: 40%;
-    bottom: calc(50% - 1em);
+    bottom: calc(50% - 2em);
     color: $c-brand-main;
+    width: 100px;
+
+    span {
+        display: inline-block;
+        color: lighten($c-text, 20);
+        font-size: 0.8em;
+    }
+
+    & > span {
+        &:before {
+            @include icon($fa-var-check);
+            color: $c-brand-main;
+            font-size: 1.2em;
+            margin-right: 0.6em;
+        }
+    }
 
     .ResponseWidget-checkbox {
         display: none;
 
         & + label {
-            display: block;
+            display: inline-block;
 
             &:before {
-                content: ' ';
-                display: block;
-                width: 1.5em;
-                height: 1.5em;
                 background-color: darken(#fff, 1);
                 border: 1px solid darken(#fff, 25);
                 border-radius: 2px;
-                transition: background-color 0.2s;
                 cursor: pointer;
+                @include icon($fa-var-check);
+                color: darken(#fff, 1);
+                height: 1.5em;
+                width: 1.5em;
+                margin-right: 0.5em;
+                transition: color 0.2s, background-color 0.2s ease-in;
             }
 
-            span {
-                display: none;
+            &:hover::before {
+                background-color: darken(#fff, 3);
+                color: rgba($c-brand-main, 0.5)!important;
             }
         }
 
         &:checked +label:before {
             background-color: darken(#fff, 5);
             @include icon($fa-var-check);
+            color: $c-brand-main!important;
+            display: inline-block;
             height: 1.5em;
             width: 1.5em;
-            margin: 0;
+            margin-right: 0.5em;
         }
 
         @include target-ie-6-7-8 {
