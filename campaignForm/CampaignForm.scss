@@ -21,6 +21,13 @@
     @include col(12,12);
 }
 
+.CampaignForm-submit {
+    @include button($color: $c-brand-comp-light, $icon: $fa-var-check);
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+}
+
 .CampaignForm-actions {
     @include col(12,12);
     .CampaignForm-action {

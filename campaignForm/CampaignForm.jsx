@@ -268,7 +268,8 @@ export default class CampaignForm extends React.Component {
                     id: 'campaignForm.submitLabel' });
 
                 submitButton = (
-                    <input type="submit" value={ submitLabel }/>
+                    <button className="CampaignForm-submit">
+                        { submitLabel }</button>
                 );
             }
 
