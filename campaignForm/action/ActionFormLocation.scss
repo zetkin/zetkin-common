@@ -2,6 +2,10 @@
     font-size: 0.9em;
     color: lighten($c-text, 20);
     margin-bottom: 0.2em;
+    max-width: calc(100% - 100px - 0.5em);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 
     &:before {
         @include icon($fa-var-map-marker);
