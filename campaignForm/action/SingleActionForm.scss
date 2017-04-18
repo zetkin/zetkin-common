@@ -21,7 +21,7 @@
     color: lighten($c-text, 30);
     font-size: 0.8em;
     line-height: 1.5em;
-    margin: 0 3.2em 0 0;
+    margin: 0 7.5em 0 0;
     overflow: hidden;
     text-overflow: ellipsis;
     max-height: 3em;
@@ -55,7 +55,7 @@
 }
 .SingleActionForm.expanded {
     .SingleActionForm-info {
-        max-height: 10em;
+        max-height: 25em;
     }
 
     .SingleActionForm-toggleExpandButton {
