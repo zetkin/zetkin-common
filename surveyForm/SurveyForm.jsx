@@ -9,6 +9,11 @@ import SurveyElement from './SurveyElement';
 export default class SurveyForm extends React.Component {
     static propTypes = {
         survey: PropTypes.map.isRequired,
+        submitEnabled: PropTypes.bool,
+    };
+
+    static defaultProps = {
+        submitEnabled: true,
     };
 
     render() {
@@ -20,17 +25,30 @@ export default class SurveyForm extends React.Component {
                 />
         ));
 
-        let submitLabel = this.props.intl.formatMessage(
-            { id: 'surveyForm.submitButton' })
+        let submitButton = null;
+        if (this.props.submitEnabled) {
+            let submitLabel = this.props.intl.formatMessage(
+                { id: 'surveyForm.submitButton' })
+
+            submitButton = (
+                <input type="submit" value={ submitLabel }/>
+            );
+        }
 
         return (
             <div className="SurveyForm">
-                <form method="post">
+                <form method="post"
+                    onSubmit={ this.onSubmit.bind(this) }>
                     { elements }
-
-                    <input type="submit" value={ submitLabel }/>
+                    { submitButton }
                 </form>
             </div>
         );
+    }
+
+    onSubmit(ev) {
+        if (!this.props.submitEnabled) {
+            ev.preventDefault();
+        }
     }
 }
