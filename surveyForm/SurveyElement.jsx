@@ -8,6 +8,7 @@ import SurveyQuestion from './SurveyQuestion';
 export default class SurveyElement extends React.Component {
     static propTypes = {
         element: PropTypes.map.isRequired,
+        onResponse: PropTypes.func,
     };
 
     render() {
@@ -26,6 +27,7 @@ export default class SurveyElement extends React.Component {
                 <SurveyQuestion
                     name={ element.get('id').toString() }
                     question={ element.get('question') }
+                    onResponse={ this.props.onResponse }
                     />
             );
         }

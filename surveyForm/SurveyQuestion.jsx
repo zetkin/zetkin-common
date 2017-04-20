@@ -26,12 +26,14 @@ export default class SurveyQuestion extends React.Component {
         let responseWidget = null;
         if (question.get('response_type') == 'options') {
             responseWidget = (
-                <OptionsWidget name={ name } question={ question }/>
+                <OptionsWidget name={ name } question={ question }
+                    onChange={ this.onChange.bind(this) }/>
             );
         }
         else if (question.get('response_type') == 'text') {
             responseWidget = (
-                <TextWidget name={ name } question={ question }/>
+                <TextWidget name={ name } question={ question }
+                    onChange={ this.onChange.bind(this) }/>
             );
         }
 
@@ -47,5 +49,23 @@ export default class SurveyQuestion extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    onChange(value) {
+        if (this.props.onResponse) {
+            let question = this.props.question;
+            let type = question.get('response_type');
+
+            if (type == 'options') {
+                this.props.onResponse({
+                    options: value,
+                });
+            }
+            else {
+                this.props.onResponse({
+                    response: value,
+                });
+            }
+        }
     }
 }
