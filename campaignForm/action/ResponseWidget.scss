@@ -26,46 +26,5 @@
         }
     }
 
-    .ResponseWidget-checkbox {
-        display: none;
-
-        & + label {
-            display: inline-block;
-
-            &:before {
-                background-color: darken(#fff, 1);
-                border: 1px solid darken(#fff, 25);
-                border-radius: 2px;
-                cursor: pointer;
-                @include icon($fa-var-check);
-                color: darken(#fff, 1);
-                height: 1.5em;
-                width: 1.5em;
-                margin-right: 0.5em;
-                transition: color 0.2s, background-color 0.2s ease-in;
-            }
-
-            &:hover::before {
-                background-color: darken(#fff, 3);
-                color: rgba($c-brand-main, 0.5)!important;
-            }
-        }
-
-        &:checked +label:before {
-            background-color: darken(#fff, 5);
-            @include icon($fa-var-check);
-            color: $c-brand-main!important;
-            display: inline-block;
-            height: 1.5em;
-            width: 1.5em;
-            margin-right: 0.5em;
-        }
-
-        @include target-ie-6-7-8 {
-            display: block;
-            & + label {
-                display: none;
-            }
-        }
-    }
+    @include checkbox-wrapper;
 }
