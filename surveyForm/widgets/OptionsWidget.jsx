@@ -7,14 +7,23 @@ export default class OptionsWidget extends React.Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
         question: PropTypes.map.isRequired,
+        response: PropTypes.map,
     };
 
     constructor(props) {
         super(props);
 
         this.state = {
-            value: [],
+            value: props.response?
+                props.response.get('options').toJS() : [],
         };
+    }
+
+    componentwillReceiveProps(nextProps) {
+        this.setState({
+            value: nextProps.response?
+                nextProps.response.get('options').toJS() : [],
+        });
     }
 
     render() {
@@ -23,6 +32,7 @@ export default class OptionsWidget extends React.Component {
         let type = question.getIn(['response_config', 'widget_type']) || 'radio';
 
         if (type == 'select') {
+            let value = this.state.value? this.state.value[0] : null;
             let optionItems = question.get('options').map(opt => {
                 let id = opt.get('id');
 
@@ -36,6 +46,7 @@ export default class OptionsWidget extends React.Component {
             return (
                 <div className="OptionsWidget">
                     <select name={ name + '.options' }
+                        value={ value }
                         onChange={ this.onSelectChange.bind(this) }>
                         { optionItems }
                     </select>
@@ -45,11 +56,13 @@ export default class OptionsWidget extends React.Component {
         else {
             let optionItems = question.get('options').map(option => {
                 let id = option.get('id');
+                let checked = this.state.value.indexOf(id) >= 0;
 
                 return (
                     <li key={ id }>
                         <input type={ type } value={ id }
                             onChange={ this.onInputChange.bind(this, id) }
+                            checked={ checked }
                             name={ name + '.options' }
                             id={ 'option-' + id }
                             />

@@ -8,14 +8,22 @@ export default class TextWidget extends React.Component {
         name: PropTypes.string.isRequired,
         question: PropTypes.map.isRequired,
         onChange: PropTypes.func,
+        response: PropTypes.map,
     };
 
     constructor(props) {
         super(props);
 
         this.state = {
-            value: props.value || '',
+            value: props.response? props.response.get('response') : '',
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            value: nextProps.response?
+                nextProps.response.get('response') : '',
+        });
     }
 
     render() {

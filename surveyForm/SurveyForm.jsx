@@ -11,6 +11,7 @@ export default class SurveyForm extends React.Component {
         survey: PropTypes.map.isRequired,
         onResponse: PropTypes.func,
         submitEnabled: PropTypes.bool,
+        submission: PropTypes.map,
     };
 
     static defaultProps = {
@@ -20,12 +21,22 @@ export default class SurveyForm extends React.Component {
     render() {
         let survey = this.props.survey;
 
-        let elements = survey.get('elements').map(elem => (
-            <SurveyElement key={ elem.get('id') }
-                onResponse={ this.onResponse.bind(this, elem.get('id')) }
-                element={ elem }
-                />
-        ));
+        let elements = survey.get('elements').map(elem => {
+            let id = elem.get('id');
+
+            let response = null;
+            if (this.props.submission) {
+                response = this.props.submission.getIn(['responses', id.toString()]);
+            }
+
+            return (
+                <SurveyElement key={ id }
+                    onResponse={ this.onResponse.bind(this, id) }
+                    response={ response }
+                    element={ elem }
+                    />
+            );
+        });
 
         let submitButton = null;
         if (this.props.submitEnabled) {

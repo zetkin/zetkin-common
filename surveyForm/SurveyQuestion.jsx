@@ -9,6 +9,7 @@ export default class SurveyQuestion extends React.Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
         question: PropTypes.map.isRequired,
+        response: PropTypes.map,
     };
 
     render() {
@@ -27,12 +28,14 @@ export default class SurveyQuestion extends React.Component {
         if (question.get('response_type') == 'options') {
             responseWidget = (
                 <OptionsWidget name={ name } question={ question }
+                    response={ this.props.response }
                     onChange={ this.onChange.bind(this) }/>
             );
         }
         else if (question.get('response_type') == 'text') {
             responseWidget = (
                 <TextWidget name={ name } question={ question }
+                    response={ this.props.response }
                     onChange={ this.onChange.bind(this) }/>
             );
         }
