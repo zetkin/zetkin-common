@@ -11,9 +11,7 @@
         margin: 0.8em 0 0;
     }
 
-    input[type=checkbox] {
-        -webkit-appearance: checkbox;
-    }
+    @include checkbox-wrapper;
 
     input[type=radio] {
         -webkit-appearance: radio;
