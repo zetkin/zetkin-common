@@ -1,17 +1,21 @@
 .SurveySignatureOption {
-    max-height: 1.5em;
+    max-height: 2.5em;
     overflow: hidden;
 
     transition: max-height 0.2s linear;
 
     .SurveySignatureOption-header {
         display: block;
-        height: 1.5em;
-        padding: 0.2em;
-        background-color: darken($c-ui-bg, 5);
+        height: 2.5em;
+        padding: 0.5em;
+        background-color: darken($c-ui-bg, 2);
 
         input {
             margin-right: 1em;
+        }
+
+        & > * {
+            vertical-align: middle;
         }
     }
 
@@ -29,17 +33,25 @@
 
     &.SurveySignatureOption-email {
         .SurveySignatureOption-content {
+            > div {
+                margin: 0.2em 0;
+            }
+
             label {
+                width: 30%;
                 display: block;
                 float: left;
                 clear: left;
-
-                width: 30%;
                 max-width: 10em;
+                line-height: 1.5em;
             }
 
             input {
-                width: 50%;
+                width: 70%;
+                font-size: 1.0em;
+                line-height: 1.5em;
+                padding: 0.1em 0.4em;
+                border: 1px solid $c-ui-dark;
             }
         }
 
