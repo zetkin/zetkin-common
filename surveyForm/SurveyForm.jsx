@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 import { injectIntl } from 'react-intl';
 
 import PropTypes from '../../utils/PropTypes';
@@ -20,6 +21,14 @@ export default class SurveyForm extends React.Component {
     static defaultProps = {
         submitEnabled: true,
     };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            valid: true,
+        };
+    }
 
     render() {
         let survey = this.props.survey;
@@ -55,12 +64,18 @@ export default class SurveyForm extends React.Component {
                 <SurveySignature name="sig"
                     user={ this.props.user }
                     options={ this.props.signatureOptions }
+                    onChange={ this.onSignature.bind(this) }
                     />
             );
         }
 
+        let classes = cx('SurveyForm', {
+            valid: this.state.valid,
+            invalid: !this.state.valid,
+        });
+
         return (
-            <div className="SurveyForm">
+            <div className={ classes }>
                 <form method="post"
                     onSubmit={ this.onSubmit.bind(this) }>
                     { elements }
@@ -72,9 +87,15 @@ export default class SurveyForm extends React.Component {
     }
 
     onSubmit(ev) {
-        if (!this.props.submitEnabled) {
+        if (!this.state.valid || !this.props.submitEnabled) {
             ev.preventDefault();
         }
+    }
+
+    onSignature(sig, valid) {
+        this.setState({
+            valid: valid,
+        });
     }
 
     onResponse(elemId, response) {

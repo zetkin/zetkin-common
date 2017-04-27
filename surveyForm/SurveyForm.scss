@@ -12,4 +12,16 @@
         margin: 4em auto 1em;
         @include button();
     }
+
+    &.invalid {
+        input[type=submit] {
+            background-color: $c-ui-dark;
+            cursor: auto;
+            pointer-events: none;
+
+            &:hover {
+                background-color: $c-ui-dark;
+            }
+        }
+    }
 }
