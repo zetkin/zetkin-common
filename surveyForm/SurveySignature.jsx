@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { FormattedMessage as Msg } from 'react-intl';
 
 import SurveySignatureOption from './SurveySignatureOption';
@@ -78,6 +79,16 @@ export default class SurveySignature extends React.Component {
                 { options }
             </div>
         );
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        let selected = this.state.selectedOption;
+        let prevSelected = prevState.selectedOption;
+
+        if (selected == 'email' && selected != prevSelected) {
+            let node = ReactDOM.findDOMNode(this.refs.firstName);
+            node.focus();
+        }
     }
 
     componentDidMount() {
