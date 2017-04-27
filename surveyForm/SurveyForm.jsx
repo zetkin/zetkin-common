@@ -3,6 +3,7 @@ import { injectIntl } from 'react-intl';
 
 import PropTypes from '../../utils/PropTypes';
 import SurveyElement from './SurveyElement';
+import SurveySignature from './SurveySignature';
 
 
 @injectIntl
@@ -11,7 +12,9 @@ export default class SurveyForm extends React.Component {
         survey: PropTypes.map.isRequired,
         onResponse: PropTypes.func,
         submitEnabled: PropTypes.bool,
+        signatureOptions: PropTypes.array,
         submission: PropTypes.map,
+        user: PropTypes.map,
     };
 
     static defaultProps = {
@@ -38,6 +41,7 @@ export default class SurveyForm extends React.Component {
             );
         });
 
+        let signature = null;
         let submitButton = null;
         if (this.props.submitEnabled) {
             let submitLabel = this.props.intl.formatMessage(
@@ -46,6 +50,13 @@ export default class SurveyForm extends React.Component {
             submitButton = (
                 <input type="submit" value={ submitLabel }/>
             );
+
+            signature = (
+                <SurveySignature name="sig"
+                    user={ this.props.user }
+                    options={ this.props.signatureOptions }
+                    />
+            );
         }
 
         return (
@@ -53,6 +64,7 @@ export default class SurveyForm extends React.Component {
                 <form method="post"
                     onSubmit={ this.onSubmit.bind(this) }>
                     { elements }
+                    { signature }
                     { submitButton }
                 </form>
             </div>
