@@ -16,6 +16,9 @@ export default class SurveySignature extends React.Component {
         this.state = {
             selectedOption: props.options[0],
             forceExpanded: true,
+            firstName: '',
+            lastName: '',
+            email: '',
         };
     }
 
@@ -42,17 +45,23 @@ export default class SurveySignature extends React.Component {
                 <div key="firstName">
                     <Msg tagName="label"
                         id="surveyForm.signature.options.email.firstNameLabel"/>
-                    <input type="text" name="sig.first_name"/>
+                    <input type="text" name="sig.first_name" ref="firstName"
+                        onChange={ this.onFieldChange.bind(this, 'firstName') }
+                        value={ this.state.firstName } />
                 </div>,
                 <div key="lastName">
                     <Msg tagName="label"
                         id="surveyForm.signature.options.email.lastNameLabel"/>
-                    <input type="text" name="sig.last_name"/>
+                    <input type="text" name="sig.last_name"
+                        onChange={ this.onFieldChange.bind(this, 'lastName') }
+                        value={ this.state.lastName } />
                 </div>,
                 <div key="email">
                     <Msg tagName="label"
                         id="surveyForm.signature.options.email.emailLabel"/>
-                    <input type="email" name="sig.email"/>
+                    <input type="email" name="sig.email"
+                        onChange={ this.onFieldChange.bind(this, 'email') }
+                        value={ this.state.email } />
                 </div>
             ]));
         }
@@ -74,13 +83,43 @@ export default class SurveySignature extends React.Component {
     componentDidMount() {
         this.setState({
             forceExpanded: false,
-        });
+        }, this.onChange);
+    }
+
+    onChange() {
+        if (this.props.onChange) {
+            let sig = null;
+            let valid = true;
+
+            if (this.state.selectedOption == 'user') {
+                sig = 'user';
+            }
+            else if (this.state.selectedOption == 'email') {
+                sig = {
+                    first_name: this.state.firstName,
+                    last_name: this.state.lastName,
+                    email: this.state.email,
+                };
+
+                valid = sig.first_name.length
+                    && sig.last_name.length
+                    && sig.email.length;
+            }
+
+            this.props.onChange(sig, valid);
+        }
     }
 
     onOptionSelect(option) {
         this.setState({
             selectedOption: option,
-        });
+        }, this.onChange);
+    }
+
+    onFieldChange(field, ev) {
+        this.setState({
+            [field]: ev.target.value,
+        }, this.onChange);
     }
 
     renderOption(option, labelValues, children) {
