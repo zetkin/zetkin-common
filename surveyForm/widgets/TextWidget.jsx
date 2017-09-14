@@ -20,10 +20,11 @@ export default class TextWidget extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({
-            value: nextProps.response?
-                nextProps.response.get('response') : '',
-        });
+        if (nextProps.response) {
+            this.setState({
+                value: nextProps.response.get('response'),
+            });
+        }
     }
 
     render() {
