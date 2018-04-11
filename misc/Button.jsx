@@ -13,30 +13,48 @@ export default class Button extends React.Component {
         labelValues: React.PropTypes.object,
         href: React.PropTypes.string,
         onClick: React.PropTypes.func,
+        intl: React.PropTypes.object,
+        loading: React.PropTypes.bool,
     };
 
     render() {
-        let msgId = this.props.labelMsg;
+        const {
+            labelMsg : msgId,
+            className : passedClassName,
+            href,
+            labelValues,
+            onClick,
+            loading,
+            intl,
+            ...restProps
+        } = this.props;
+        const className = cx(
+            'Button',
+            passedClassName,
+            {'loading' : loading}
+        );
 
-        let classes = cx('Button', this.props.className);
-
-        let href = this.props.href;
         if (href) {
             return (
                 <FormattedLink href={ href }
-                    className={ classes }
+                    className={ className }
                     msgId={ msgId }
-                    msgValues={ this.props.labelValues }
-                    onClick={ this.props.onClick }/>
+                    msgValues={ labelValues }
+                    onClick={ onClick }
+                    {...restProps}/>
             );
         }
         else {
-            let label = this.props.intl.formatMessage({ id: msgId },
-                this.props.labelValues)
+            const label = intl.formatMessage({ id: msgId },
+                labelValues)
+            if(loading && typeof restProps.disabled === 'undefined') {
+                restProps.disabled = true;
+            }
 
             return (
-                <button className={ classes }
-                    onClick={ this.props.onClick }>
+                <button className={ className }
+                    onClick={ onClick }
+                    {...restProps}>
                     { label }
                 </button>
             )
