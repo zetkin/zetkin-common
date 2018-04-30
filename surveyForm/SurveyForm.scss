@@ -25,3 +25,11 @@
         }
     }
 }
+
+.SurveyForm-privacy {
+    @include checkbox-wrapper;
+
+    .SurveyForm-privacyTerms {
+        font-size: 0.8em;
+    }
+}
