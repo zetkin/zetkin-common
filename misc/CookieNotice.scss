@@ -1,0 +1,49 @@
+.CookieNotice {
+  font-size: 1.5em;
+  position: fixed;
+  padding: 1em;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: $c-text-contrast;
+  background-color: $c-brand-comp-light;
+  text-align: center;
+  box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.5);
+  transform: translate3d(0, 100%, 0);
+  transition-duration: 0.25s;
+  transition-property: transform;
+  transition-timing-function: ease-out;
+}
+.CookieNotice-show {
+  transform: translate3d(0, 0, 0)
+}
+.CookieNotice-privacyLink {
+  margin-left: 0.5em;
+  text-decoration: underline;
+}
+.CookieNotice-acceptButton {
+  width: 1.6em;
+  padding: 0.25em;
+  position: absolute;
+  top: 0.8em;
+  right: 0.8em;
+  background: transparent;
+  border: 0.125em solid $c-text-contrast;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 1em;
+  width: 1.75em;
+  
+  &::after {
+    @include fa-icon;
+    text-align: center;
+    content: $fa-var-times;
+  }
+}
+.CookieNotice-acceptButton:focus,
+.CookieNotice-acceptButton:hover,
+.CookieNotice-acceptButton:active {
+  color: $c-brand-comp-light;
+  border-color: $c-text-contrast;
+  background-color: $c-text-contrast;
+}
