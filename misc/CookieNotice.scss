@@ -18,10 +18,13 @@
   transform: translate3d(0, 0, 0)
 }
 .CookieNotice-privacyLink {
+  color: inherit;
   margin-left: 0.5em;
   text-decoration: underline;
 }
 .CookieNotice-acceptButton {
+  color: inherit;
+  line-height: 1;
   width: 1.6em;
   padding: 0.25em;
   position: absolute;
