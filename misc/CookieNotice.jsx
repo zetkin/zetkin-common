@@ -19,7 +19,7 @@ export default class CookieNotice extends React.Component {
            this.setState({accepted: true});
         },250)
         let expiry = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
-        document.cookie = `cookiesAccepted=true; expires=${expiry.toUTCString()};`
+        document.cookie = `cookiesAccepted=true; expires=${expiry.toUTCString()}; path=/;`
     }
     
     componentDidMount() {
