@@ -47,7 +47,10 @@ export default class CookieNotice extends React.Component {
             return (
                 <div className={className}>
                     {intl.formatMessage({ id: 'misc.cookieNotice.msg' })}
-                    <a className="CookieNotice-privacyLink" href="http://zetkin.org/privacy">{intl.formatMessage({ id: 'misc.cookieNotice.privacyLink' })}</a>
+                    <a className="CookieNotice-privacyLink"
+                        href={intl.formatMessage({ id: 'misc.cookieNotice.privacyLink.href' })}>
+                        {intl.formatMessage({ id: 'misc.cookieNotice.privacyLink.label' })}
+                    </a>
                     <button className="CookieNotice-acceptButton" onClick={this.handleAccept.bind(this)}></button>
                 </div>
             );

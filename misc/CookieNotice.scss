@@ -1,5 +1,5 @@
 .CookieNotice {
-  font-size: 1.5em;
+  font-size: 1.2em;
   position: fixed;
   padding: 1em;
   bottom: 0;
@@ -13,6 +13,7 @@
   transition-duration: 0.25s;
   transition-property: transform;
   transition-timing-function: ease-out;
+  z-index: 9999;
 }
 .CookieNotice-show {
   transform: translate3d(0, 0, 0)
