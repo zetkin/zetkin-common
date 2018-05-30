@@ -31,7 +31,7 @@ export default class UserContinueButton extends React.Component {
         const lastName = userData.get('last_name');
         const userId = userData.get('id');
         const avatarDomain = '//api.' + domain;
-        const avatarSrc = avatarDomain + '/v1/users/' + userId + '/avatar';
+        const avatarSrc = avatarDomain + '/users/' + userId + '/avatar';
         const avatarStyle = {backgroundImage: 'url("' + avatarSrc + '")'}
         const settingsUrl = '//www.' + domain + '/settings';
         const classes = cx('UserMenu', {
