@@ -3,8 +3,8 @@ import { FormattedMessage as Msg } from 'react-intl';
 
 import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
-import ActionFormLocation from './ActionFormLocation';
-import ActionFormTime from './ActionFormTime';
+import ActionFormInfoLabel from './ActionFormInfoLabel';
+import MultiActionFormItem from './MultiActionFormItem';
 import ResponseWidget from './ResponseWidget';
 
 
@@ -35,13 +35,14 @@ export default class MultiShiftActionForm extends React.Component {
                 .indexOf(action.get('id').toString()) >= 0;
 
             return (
-                <li key={ timeLabel }
-                    className="MultiShiftActionForm-shiftItem">
-                    <ActionFormTime time={ timeLabel } />
-                    <ResponseWidget action={ action }
-                        isBooked={ isBooked } response={ response }
-                        onChange={ this.onChange.bind(this) }/>
-                </li>
+                <MultiActionFormItem key={ timeLabel }
+                    className="MultiShiftActionForm-shiftItem"
+                    label={ timeLabel } labelClass="time"
+                    action={ action }
+                    isBooked={ isBooked } response={ response }
+                    onSignUp={ this.onSignUp.bind(this) }
+                    onUndo={ this.onUndo.bind(this) }
+                    />
             );
         });
 
@@ -49,18 +50,24 @@ export default class MultiShiftActionForm extends React.Component {
             <div className="MultiShiftActionForm">
                 <ActionFormTitle
                     title={ actions[0].getIn(['activity', 'title']) } />
-                <ActionFormLocation
-                    location={ actions[0].getIn(['location', 'title']) } />
-                <ul className="MultiShiftactionForm-shifts">
+                <ActionFormInfoLabel className="ActionFormLocation"
+                            item={ actions[0].getIn(['location', 'title']) }/>
+                <ul>
                     { shiftItems }
                 </ul>
             </div>
         );
     }
 
-    onChange(action, ev) {
+    onSignUp(action, ev) {
         if (this.props.onChange) {
-            this.props.onChange(action, ev.target.checked);
+            this.props.onChange(action, true);
+        }
+    }
+
+    onUndo(action, ev) {
+        if (this.props.onChange) {
+            this.props.onChange(action, false);
         }
     }
 }

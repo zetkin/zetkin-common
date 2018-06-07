@@ -3,18 +3,20 @@
     width: 100%;
     margin-bottom: 1em;
 
-    @include medium-screen {
-        position: absolute;
-        right: 1.5em;
-        bottom: 40%;
-        bottom: calc(50% - 2em);
-        width: 100px;
+    .ResponseWidget-button {
+        @include button();
+
+        &:focus {
+            outline: none;
+        }
+
+        &.signedUp {
+            @include button($color: $c-ui-dark);
+        }
     }
 
     span {
-        display: inline-block;
         color: lighten($c-text, 20);
-        font-size: 0.8em;
     }
 
     & > span {
@@ -22,9 +24,6 @@
             @include icon($fa-var-check);
             color: $c-brand-main;
             font-size: 1.2em;
-            margin-right: 0.6em;
         }
     }
-
-    @include checkbox-wrapper;
 }

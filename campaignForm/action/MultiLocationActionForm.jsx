@@ -4,8 +4,8 @@ import cx from 'classnames';
 import Link from '../../misc/FormattedLink';
 import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
-import ActionFormLocation from './ActionFormLocation';
-import ActionFormTime from './ActionFormTime';
+import ActionFormInfoLabel from './ActionFormInfoLabel';
+import MultiActionFormItem from './MultiActionFormItem';
 import ResponseWidget from './ResponseWidget';
 
 
@@ -63,18 +63,19 @@ export default class MultiLocationActionForm extends React.Component {
                     .indexOf(action.get('id').toString()) >= 0;
 
                 return (
-                    <li key={ locLabel }
-                        className="MultiLocationActionForm-locationItem">
-                        <ActionFormLocation location={ locLabel } />
-                        <ResponseWidget action={ action }
-                            isBooked={ isBooked } response={ response }
-                            onChange={ this.onChange.bind(this) }/>
-                    </li>
+                    <MultiActionFormItem key={ locLabel }
+                        className="MultiLocationActionForm-locationItem"
+                        labelClass="location" label={ locLabel }
+                        action={ action }
+                        isBooked={ isBooked } response={ response }
+                        onSignUp={ this.onSignUp.bind(this) }
+                        onUndo={ this.onUndo.bind(this) }
+                        />
                 );
             });
 
             content = (
-                <ul className="MultiLocationactionForm-locations">
+                <ul>
                     { locItems }
                 </ul>
             );
@@ -93,7 +94,9 @@ export default class MultiLocationActionForm extends React.Component {
                     action={ actions[0] }
                     isBooked={ isBooked }
                     response={ response }
-                    onChange={ this.onChangeAll.bind(this) }/>
+                    onSignUp={ this.onSignUpAll.bind(this) }
+                    onUndo={ this.onUndoAll.bind(this)}
+                    />
             ];
         }
 
@@ -105,7 +108,8 @@ export default class MultiLocationActionForm extends React.Component {
             <div className="MultiLocationActionForm">
                 <ActionFormTitle
                     title={ actions[0].getIn(['activity', 'title']) } />
-                <ActionFormTime time={ timeLabel } />
+                <ActionFormInfoLabel className="time"
+                    label={ timeLabel }/>
                 { content }
             </div>
         );
@@ -117,17 +121,36 @@ export default class MultiLocationActionForm extends React.Component {
         });
     }
 
-    onChange(action, ev) {
+    onSignUp(action, ev) {
+        ev.preventDefault();
         if (this.props.onChange) {
-            this.props.onChange(action, ev.target.checked);
+            this.props.onChange(action, true);
         }
     }
 
-    onChangeAll(action, ev) {
+    onUndo(action, ev) {
+        ev.preventDefault();
+        if (this.props.onChange) {
+            this.props.onChange(action, false);
+        }
+    }
+
+    onSignUpAll(action, ev) {
+        ev.preventDefault();
         if (this.props.onChange) {
             for (let i = 0; i < this.props.actions.length; i++) {
                 let action = this.props.actions[i];
-                this.props.onChange(action, ev.target.checked);
+                this.props.onChange(action, true);
+            }
+        }
+    }
+
+    onUndoAll(action, ev) {
+        ev.preventDefault();
+        if (this.props.onChange) {
+            for (let i = 0; i < this.props.actions.length; i++) {
+                let action = this.props.actions[i];
+                this.props.onChange(action, false);
             }
         }
     }

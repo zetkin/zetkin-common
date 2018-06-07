@@ -4,8 +4,7 @@ import ReactDOM from 'react-dom';
 import { FormattedMessage as Msg } from 'react-intl';
 
 import ActionFormTitle from './ActionFormTitle';
-import ActionFormLocation from './ActionFormLocation';
-import ActionFormTime from './ActionFormTime';
+import ActionFormInfoLabel from './ActionFormInfoLabel';
 import ResponseWidget from './ResponseWidget';
 
 
@@ -79,8 +78,10 @@ export default class SingleActionForm extends React.Component {
         return (
             <div className={ classes }>
                 <ActionFormTitle title={ activity } />
-                <ActionFormLocation location={ location } />
-                <ActionFormTime time={ timeLabel } />
+                <ActionFormInfoLabel className="location"
+                    label={ location }/>
+                <ActionFormInfoLabel className="time"
+                    label={ timeLabel }/>
 
                 { infoText }
 
@@ -88,7 +89,9 @@ export default class SingleActionForm extends React.Component {
                     <ResponseWidget action={ action }
                         isBooked={ this.props.isBooked }
                         response={ this.props.response }
-                        onChange={ this.onChange.bind(this) }/>
+                        onSignUp={ this.onSignUp.bind(this) }
+                        onUndo={ this.onUndo.bind(this) }
+                        />
                 </div>
             </div>
         );
@@ -102,9 +105,13 @@ export default class SingleActionForm extends React.Component {
         });
     }
 
-    onChange(action, ev) {
-        if (this.props.onChange) {
-            this.props.onChange(action, ev.target.checked);
-        }
+    onSignUp(action, ev) {
+        ev.preventDefault();
+        this.props.onChange(action, true);
+    }
+
+    onUndo(action, ev) {
+        ev.preventDefault();
+        this.props.onChange(action, false);
     }
 };

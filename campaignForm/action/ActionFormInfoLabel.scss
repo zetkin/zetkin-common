@@ -1,17 +1,15 @@
-.ActionFormLocation {
-    font-size: 0.9em;
+.ActionFormInfoLabel {
     color: lighten($c-text, 20);
-    margin-bottom: 0.2em;
     max-width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    padding: 0.25em 0;
 
-    @include medium-screen {
-        max-width: calc(100% - 100px - 0.5em);
-    }
-
-    &:before {
+    &.location:before {
         @include icon($fa-var-map-marker);
+    }
+    &.time:before {
+        @include icon($fa-var-clock-o);
     }
 }

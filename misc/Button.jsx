@@ -52,7 +52,7 @@ export default class Button extends React.Component {
             }
 
             return (
-                <button className={ className }
+                <button type="button" className={ className }
                     onClick={ onClick }
                     {...restProps}>
                     { label }
