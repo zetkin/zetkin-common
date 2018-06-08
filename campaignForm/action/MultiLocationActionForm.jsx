@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import cx from 'classnames';
 
 import Link from '../../misc/FormattedLink';
@@ -6,9 +7,14 @@ import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
 import ActionFormInfoLabel from './ActionFormInfoLabel';
 import MultiActionFormItem from './MultiActionFormItem';
+import ActionInfoSection from './ActionInfoSection';
 import ResponseWidget from './ResponseWidget';
 
+const mapStateToProps = state => ({
+    orgList: state.getIn(['orgs', 'orgList', 'items'])
+});
 
+@connect(mapStateToProps)
 export default class MultiLocationActionForm extends React.Component {
     static propTypes = {
         actions: PropTypes.array.isRequired,
@@ -20,22 +26,8 @@ export default class MultiLocationActionForm extends React.Component {
         super(props);
 
         this.state = {
-            expanded: true,
+            viewInfo: null
         };
-    }
-
-    componentDidMount() {
-        let numBookings = this.props.bookings.length;
-        let numResponses = this.props.responses.length;
-        let numActions = this.props.actions.length;
-
-        if (numBookings === 0 && (numResponses === numActions || !numResponses)
-            || numBookings == numActions) {
-            // All yes or all no means we can collapse
-            this.setState({
-                expanded: false,
-            });
-        }
     }
 
     render() {
@@ -50,55 +42,55 @@ export default class MultiLocationActionForm extends React.Component {
         let timeLabel = startTime.format('{HH}:{mm}')
             + ' - ' + endTime.format('{HH}:{mm}');
 
+        let orgItem = this.props.orgList.find(org =>
+                org.get('id') == actions[0].get('org_id'));
+        let organization = orgItem.get('title');
+
         let content;
 
-        if (this.state.expanded) {
-            let locItems = actions.map(action => {
-                let id = action.get('id');
-                let locLabel = action.getIn(['location', 'title']);
+        let actionInfoSection;
 
-                let isBooked = this.props.bookings
-                    .indexOf(action.get('id').toString()) >= 0;
-                let response = this.props.responses
-                    .indexOf(action.get('id').toString()) >= 0;
-
-                return (
-                    <MultiActionFormItem key={ locLabel }
-                        className="MultiLocationActionForm-locationItem"
-                        labelClass="location" label={ locLabel }
-                        action={ action }
-                        isBooked={ isBooked } response={ response }
-                        onSignUp={ this.onSignUp.bind(this) }
-                        onUndo={ this.onUndo.bind(this) }
-                        />
-                );
-            });
-
-            content = (
-                <ul>
-                    { locItems }
-                </ul>
+        if (this.state.viewInfo) {
+            actionInfoSection = (
+                <ActionInfoSection
+                    action={ this.state.viewInfo }
+                    onViewInfo={
+                        this.onViewInfo.bind(this, this.state.action) }
+                    isBooked={ this.props.isBooked }
+                    response={ this.props.response }
+                    onSignUp={ this.onSignUp.bind(this) }
+                    onUndo={ this.onUndo.bind(this) }
+                    />
             );
         }
-        else {
-            let isBooked = this.props.bookings.length === actions.length;
-            let response = this.props.responses.length === actions.length;
 
-            content = [
-                <Link key="multiLocationLink"
-                    className="MultiLocationActionForm-locationsLink"
-                    msgId="campaignForm.action.multiLocationLabel"
-                    msgValues={{ count: actions.length }}
-                    onClick={ this.onClickExpand.bind(this) }/>,
-                <ResponseWidget key="responseWidget"
-                    action={ actions[0] }
-                    isBooked={ isBooked }
-                    response={ response }
-                    onSignUp={ this.onSignUpAll.bind(this) }
-                    onUndo={ this.onUndoAll.bind(this)}
+        let locItems = actions.map(action => {
+            let id = action.get('id');
+            let locLabel = action.getIn(['location', 'title']);
+
+            let isBooked = this.props.bookings
+                .indexOf(action.get('id').toString()) >= 0;
+            let response = this.props.responses
+                .indexOf(action.get('id').toString()) >= 0;
+
+            return (
+                <MultiActionFormItem key={ locLabel }
+                    className="MultiLocationActionForm-locationItem"
+                    labelClass="location" label={ locLabel }
+                    action={ action }
+                    isBooked={ isBooked } response={ response }
+                    onSignUp={ this.onSignUp.bind(this) }
+                    onUndo={ this.onUndo.bind(this) }
+                    onClick={ this.onViewInfo.bind(this, action) }
                     />
-            ];
-        }
+            );
+        });
+
+        content = (
+            <ul>
+                { locItems }
+            </ul>
+        );
 
         let classes = cx('MultiLocationActionForm', {
             expanded: this.state.expanded,
@@ -107,29 +99,27 @@ export default class MultiLocationActionForm extends React.Component {
         return (
             <div className="MultiLocationActionForm">
                 <ActionFormTitle
-                    title={ actions[0].getIn(['activity', 'title']) } />
+                    title={ actions[0].getIn(['activity', 'title']) }
+                    organization={ organization }/>
+                <ActionFormInfoLabel className="campaign"
+                    label={ actions[0].getIn(['campaign', 'title']) }/>
                 <ActionFormInfoLabel className="time"
                     label={ timeLabel }/>
                 { content }
+                { actionInfoSection }
             </div>
         );
     }
 
-    onClickExpand() {
-        this.setState({
-            expanded: true,
-        });
-    }
-
     onSignUp(action, ev) {
-        ev.preventDefault();
+        ev.stopPropagation();
         if (this.props.onChange) {
             this.props.onChange(action, true);
         }
     }
 
     onUndo(action, ev) {
-        ev.preventDefault();
+        ev.stopPropagation();
         if (this.props.onChange) {
             this.props.onChange(action, false);
         }
@@ -153,5 +143,12 @@ export default class MultiLocationActionForm extends React.Component {
                 this.props.onChange(action, false);
             }
         }
+    }
+
+    onViewInfo(action, ev) {
+        ev.preventDefault();
+        this.setState({
+            viewInfo: this.state.viewInfo? null : action
+        });
     }
 }

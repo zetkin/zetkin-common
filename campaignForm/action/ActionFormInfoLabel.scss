@@ -12,4 +12,7 @@
     &.time:before {
         @include icon($fa-var-clock-o);
     }
+    &.campaign:before {
+        @include icon($fa-var-flag);
+    }
 }

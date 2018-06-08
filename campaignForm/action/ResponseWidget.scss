@@ -20,6 +20,11 @@
     }
 
     & > span {
+        display: inline-block;
+        text-align: center;
+        font-size: 1.1em;
+        margin-left: -0.5em;
+
         &:before {
             @include icon($fa-var-check);
             color: $c-brand-main;

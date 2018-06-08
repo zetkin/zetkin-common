@@ -1,13 +1,20 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import cx from 'classnames';
 import ReactDOM from 'react-dom';
 import { FormattedMessage as Msg } from 'react-intl';
 
 import ActionFormTitle from './ActionFormTitle';
 import ActionFormInfoLabel from './ActionFormInfoLabel';
+import ActionInfoSection from './ActionInfoSection';
 import ResponseWidget from './ResponseWidget';
+import Button from '../../misc/Button';
 
+const mapStateToProps = state => ({
+    orgList: state.getIn(['orgs', 'orgList', 'items'])
+});
 
+@connect(mapStateToProps)
 export default class SingleActionForm extends React.Component {
     static propTypes = {
         onChange: React.PropTypes.func,
@@ -20,6 +27,7 @@ export default class SingleActionForm extends React.Component {
 
         this.state = {
             viewMode: undefined,
+            viewInfo: null,
         };
     }
 
@@ -47,6 +55,12 @@ export default class SingleActionForm extends React.Component {
         let timeLabel = startTime.format('{HH}:{mm}')
             + ' - ' + endTime.format('{HH}:{mm}');
 
+        let orgItem = this.props.orgList.find(org =>
+                org.get('id') == action.get('org_id'));
+        let organization = orgItem.get('title');
+
+        let campaign = action.getIn(['campaign', 'title']);
+
         let location = action.getIn(['location', 'title']);
 
         let infoText = null;
@@ -57,17 +71,21 @@ export default class SingleActionForm extends React.Component {
                     { action.get('info_text') }
                 </p>
             ];
+        }
 
-            if (this.state.viewMode) {
-                infoText.push(
-                    <button
-                        key="toggleExpandButton"
-                        className="SingleActionForm-toggleExpandButton"
-                        onClick={ this.onClickToggleExpandButton.bind(this) }>
-                        </button>
-                );
-            }
+        let actionInfoSection;
 
+        if (this.state.viewInfo) {
+            actionInfoSection = (
+                <ActionInfoSection
+                    action={ this.state.viewInfo }
+                    onViewInfo={ this.onViewInfo.bind(this, action) }
+                    isBooked={ this.props.isBooked }
+                    response={ this.props.response }
+                    onSignUp={ this.onSignUp.bind(this) }
+                    onUndo={ this.onUndo.bind(this) }
+                    />
+            );
         }
 
         let classes = cx('SingleActionForm', {
@@ -77,7 +95,10 @@ export default class SingleActionForm extends React.Component {
 
         return (
             <div className={ classes }>
-                <ActionFormTitle title={ activity } />
+                <ActionFormTitle title={ activity }
+                    organization={ organization } />
+                <ActionFormInfoLabel className="campaign"
+                    label={ campaign }/>
                 <ActionFormInfoLabel className="location"
                     label={ location }/>
                 <ActionFormInfoLabel className="time"
@@ -85,7 +106,12 @@ export default class SingleActionForm extends React.Component {
 
                 { infoText }
 
-                <div className="SingleActionForm-response">
+                <div className="SingleActionForm-buttons">
+                    <Button key="info"
+                        className="SingleActionForm-infoButton"
+                        labelMsg="campaignForm.action.infoButton"
+                        onClick={ this.onViewInfo.bind(this, action) }
+                        />
                     <ResponseWidget action={ action }
                         isBooked={ this.props.isBooked }
                         response={ this.props.response }
@@ -93,6 +119,7 @@ export default class SingleActionForm extends React.Component {
                         onUndo={ this.onUndo.bind(this) }
                         />
                 </div>
+                { actionInfoSection }
             </div>
         );
     }
@@ -113,5 +140,12 @@ export default class SingleActionForm extends React.Component {
     onUndo(action, ev) {
         ev.preventDefault();
         this.props.onChange(action, false);
+    }
+
+    onViewInfo(action, ev) {
+        ev.preventDefault();
+        this.setState({
+            viewInfo: this.state.viewInfo? null : action
+        });
     }
 };

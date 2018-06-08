@@ -1,0 +1,98 @@
+.ActionInfoSection {
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 1.5em;
+    animation-name: show;
+    animation-duration: 0.1s;
+    animation-timing-function: ease-out;
+
+    @keyframes show {
+        from { transform: scale(0.8, 0.1); }
+        to { transform: scale(1); }
+    }
+
+    @include large-screen {
+        @include col(4,12);
+        @include col-offset(8, 12);
+    }
+
+    .ActionInfoSection-title {
+        margin-bottom: 0.5em;
+    }
+
+    .ActionInfoSection-orgTitle {
+        color: lighten($c-text, 30);
+        margin-bottom: 0.5em;
+    }
+
+    .ActionFormInfoLabel {
+        font-size: 1.1em;
+        color: $c-text;
+    }
+
+    .ActionInfoSection-infoText {
+        p {
+            line-height: 1.6em;
+        }
+    }
+    @mixin box_shadow ($level) {
+        @if $level == 1 {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12),
+                0 1px 2px rgba(0,0,0,0.24);
+        } @else if $level == 2 {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16),
+                0 3px 6px rgba(0,0,0,0.23);
+        } @else if $level == 3 {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19),
+                0 6px 6px rgba(0,0,0,0.23);
+        } @else if $level == 4 {
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25),
+                0 10px 10px rgba(0,0,0,0.22);
+        } @else if $level == 5 {
+            box-shadow: 0 19px 38px rgba(0,0,0,0.30),
+                0 15px 12px rgba(0,0,0,0.22);
+        }
+    }
+
+    .ResponseWidget {
+        position: absolute;
+        font-size: 1.3em;
+        left: 0;
+        right: 0;
+        bottom: 2em;
+        text-align: center;
+
+        button {
+            -webkit-transition: all 250ms;
+            -moz-transition: all 250ms;
+            transition: all 250ms;
+            @include box_shadow(1);
+            &:hover {
+                @include box_shadow(2);
+                -webkit-transform: translateY(-2px);
+                -moz-transform: translateY(-2px);
+                transform: translateY(-2px);
+            }
+        }
+    }
+
+    .ActionInfoSection-closeButton{
+        position: absolute;
+        right: 0;
+        top: 4em;
+        @include button($color: $c-ui-dark, $icon: $fa-var-times);
+        border-radius: 3em 0 0 3em;
+        padding: 0 0.5em 0 1em;
+
+        &:before {
+            font-size: 2em;
+            line-height: 1.6;
+            height: 1.6;
+        }
+    }
+}

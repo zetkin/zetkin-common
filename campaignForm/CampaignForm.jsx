@@ -298,14 +298,14 @@ export default class CampaignForm extends React.Component {
                         responses={ responses }
                         bookings={ bookings }
                         />
-                    <CampaignFilter
+                    {/*<CampaignFilter
                         className="CampaignForm-filter"
                         actions={ allActions }
                         selectedActivities={ this.state.filterActivities }
                         selectedCampaigns={ this.state.filterCampaigns }
                         selectedLocations={ this.state.filterLocations }
                         onChange={ this.onFilterChange.bind(this) }
-                        />
+                        />*/}
                     <form method="post" action="/forms/actionResponse"
                         className="CampaignForm-form">
                         <ul className="CampaignForm-days">

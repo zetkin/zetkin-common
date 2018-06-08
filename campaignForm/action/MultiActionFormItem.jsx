@@ -7,7 +7,8 @@ import ResponseWidget from './ResponseWidget';
 export default props => {
     let classes = cx('MultiActionFormItem', props.className)
     return (
-        <li className={ classes }>
+        <li className={ classes }
+            onClick={ props.onClick }>
             <ActionFormInfoLabel className={ props.labelClass }
                 label={ props.label }/>
             <ResponseWidget action={ props.action }

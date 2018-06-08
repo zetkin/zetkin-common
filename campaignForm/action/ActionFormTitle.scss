@@ -1,4 +1,10 @@
-h3.ActionFormTitle {
-    margin: 0 0 0.2em 0;
-    font-size: 1.5em;
+.ActionFormTitle {
+    h3.ActionFormTitle-actionTitle {
+        margin: 0 0 0.2em 0;
+        font-size: 1.5em;
+    }
+    .ActionFormTitle-orgTitle {
+        color: lighten($c-text, 30);
+        margin-bottom: 0.5em;
+    }
 }

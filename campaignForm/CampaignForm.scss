@@ -30,7 +30,7 @@
     @include col(12,12);
 
     @include large-screen {
-        @include col(8,12);
+        @include col(4,12);
         @include col-offset(0, 12);
     }
 }
@@ -47,7 +47,9 @@
     .CampaignForm-action {
         position: relative;
         margin: 1em 0;
+        padding: 1em 0;
         list-style: none;
+        border-bottom: 1px solid darken($c-ui-bg,5);
 
         > div {
             position: relative;
@@ -69,15 +71,16 @@
         .CampaignForm-date {
             @include col(12,12);
             background-color: $c-ui-bg;
-            padding: 0.5em;
+            padding: 1em;
+            color: lighten($c-text, 20);
 
             span {
-                font-size: 1.0em;
-                margin-right: 1em;
+                font-size: 1.3em;
+                margin-right: 0.5em;
             }
 
             span + span {
-                font-size: 0.8em;
+                font-size: 1em;
             }
         }
     }
