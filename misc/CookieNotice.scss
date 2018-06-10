@@ -1,7 +1,7 @@
 .CookieNotice {
-  font-size: 1.2em;
+  font-size: 1em;
   position: fixed;
-  padding: 1em;
+  padding: 1em 3em;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -37,6 +37,7 @@
   text-align: center;
   font-size: 1em;
   width: 1.75em;
+  cursor: pointer;
   
   &::after {
     @include fa-icon;
