@@ -6,6 +6,7 @@ import PropTypes from '../../../utils/PropTypes';
 
 import ActionFormInfoLabel from './ActionFormInfoLabel';
 import ResponseWidget from './ResponseWidget';
+import ActionMap from './ActionMap';
 
 const mapStateToProps = state => ({
     orgList: state.getIn(['orgs', 'orgList', 'items'])
@@ -48,30 +49,44 @@ export default class ActionInfoSection extends React.Component {
 
         let infoText = action.get('info_text');
 
+        let int = action.getIn('location', 'lat');
+
+        const latlng = {
+            lat: action.getIn(['location', 'lat']),
+            lng: action.getIn(['location', 'lng']),
+        };
+
         return (
             <div className={ classes }>
-                <h1 className="ActionInfoSection-title">
-                    { title }
-                </h1>
-                <div className="ActionInfoSection-orgTitle">
-                    { organization }
-                </div>
-                <ActionFormInfoLabel className="campaign"
-                label={ campaign }/>
-                <ActionFormInfoLabel className="time"
-                    label={ timeLabel }/>
-                <div className="ActionInfoSection-infoText">
-                    <p>
-                        { infoText }
-                    </p>
-                </div>
-                { location }
+                <div className="ActionInfoSection-wrapper">
+                    <h1 className="ActionInfoSection-title">
+                        { title }
+                    </h1>
+                    <div className="ActionInfoSection-orgTitle">
+                        { organization }
+                    </div>
+                    <ActionFormInfoLabel className="campaign"
+                    label={ campaign }/>
+                    <ActionFormInfoLabel className="time"
+                        label={ timeLabel }/>
 
+                    <div className="ActionInfoSection-infoText">
+                        <p>
+                            { infoText }
+                        </p>
+                    </div>
+                    { location }
+                </div>
                 <ResponseWidget action={ this.props.action }
                     isBooked={ this.props.isBooked }
                     response={ this.props.response }
                     onSignUp={ this.props.onSignUp }
                     onUndo={ this.props.onUndo }
+                    />
+
+                <ActionMap key="map"
+                    zoom={ 14 }
+                    pendingLocation={ latlng }
                     />
 
                 <a key="close"
@@ -80,5 +95,15 @@ export default class ActionInfoSection extends React.Component {
                     />
             </div>
         );
+    }
+
+    onSignUp(action, ev) {
+        ev.preventDefault();
+        this.props.onChange(action, true);
+    }
+
+    onUndo(action, ev) {
+        ev.preventDefault();
+        this.props.onChange(action, false);
     }
 };

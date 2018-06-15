@@ -6,7 +6,6 @@
     left: 0;
     right: 0;
     background-color: white;
-    padding: 1.5em;
     animation-name: show;
     animation-duration: 0.1s;
     animation-timing-function: ease-out;
@@ -19,6 +18,12 @@
     @include large-screen {
         @include col(4,12);
         @include col-offset(8, 12);
+    }
+
+    .ActionInfoSection-wrapper {
+        height: 60%;
+        overflow: scroll;
+        padding: 1.5em;
     }
 
     .ActionInfoSection-title {
@@ -64,8 +69,9 @@
         font-size: 1.3em;
         left: 0;
         right: 0;
-        bottom: 2em;
+        bottom: 2%;
         text-align: center;
+        z-index: 99;
 
         button {
             -webkit-transition: all 250ms;
@@ -79,6 +85,21 @@
                 transform: translateY(-2px);
             }
         }
+
+        span {
+            background-color: rgba(255,255,255,0.6);
+            padding: 0.5em 1em;
+            border-radius: 30em;
+        }
+    }
+
+    .ActionMap {
+        position: absolute!important;
+        height: 40%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 98;
     }
 
     .ActionInfoSection-closeButton{
