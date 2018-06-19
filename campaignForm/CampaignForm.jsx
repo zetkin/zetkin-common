@@ -380,7 +380,7 @@ export default class CampaignForm extends React.Component {
 
         let target = document.getElementById(fragment);
         let rect = target.getBoundingClientRect();
-        let scrollTop = rect.top + offset;
+        let scrollTop = rect.top + offset + window.scrollY;
 
         let animatedScrollTo = require('animated-scrollto');
         let duration = 200 + scrollTop / 15;
