@@ -12,6 +12,20 @@
     @include large-screen {
         @include col(3,12);
         @include col-offset(0, 12);
+        position: absolute;
+    }
+}
+
+.CampaignForm-scrolled {
+    .CampaignForm-calendar {
+        @include large-screen {
+            position: fixed;
+            z-index: 99;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
     }
 }
 
@@ -30,8 +44,9 @@
     @include col(12,12);
 
     @include large-screen {
+        // position: absolute;
         @include col(4,12);
-        @include col-offset(0.2, 12);
+        @include col-offset(3.2, 12);
     }
 }
 
