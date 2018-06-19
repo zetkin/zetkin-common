@@ -16,7 +16,7 @@ const mapStateToProps = state => ({
 export default class ActionInfoSection extends React.Component {
     static propTypes = {
         action: PropTypes.object.isRequired,
-        onViewInfo: PropTypes.func,
+        onClose: PropTypes.func,
     };
 
     constructor(props) {
@@ -45,6 +45,9 @@ export default class ActionInfoSection extends React.Component {
 
         let campaign = action.getIn(['campaign', 'title']);
 
+        let campaignLink = '/o/' + action.get('org_id')
+        + '/campaigns/' + action.getIn(['campaign', 'id']);
+
         let location = action.getIn(['location', 'title']);
 
         let infoText = action.get('info_text');
@@ -65,8 +68,12 @@ export default class ActionInfoSection extends React.Component {
                     <div className="ActionInfoSection-orgTitle">
                         { organization }
                     </div>
-                    <ActionFormInfoLabel className="campaign"
-                    label={ campaign }/>
+                    <a href={ campaignLink } target="_blank">
+                        <ActionFormInfoLabel className="campaign"
+                        label={ campaign }/>
+                    </a>
+                    <ActionFormInfoLabel className="location"
+                    label={ location }/>
                     <ActionFormInfoLabel className="time"
                         label={ timeLabel }/>
 
@@ -75,7 +82,6 @@ export default class ActionInfoSection extends React.Component {
                             { infoText }
                         </p>
                     </div>
-                    { location }
                 </div>
                 <ResponseWidget action={ this.props.action }
                     isBooked={ this.props.isBooked }
@@ -91,7 +97,7 @@ export default class ActionInfoSection extends React.Component {
 
                 <a key="close"
                     className="ActionInfoSection-closeButton"
-                    onClick={ this.props.onViewInfo }
+                    onClick={ this.props.onClose }
                     />
             </div>
         );

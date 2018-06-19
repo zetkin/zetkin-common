@@ -6,7 +6,6 @@ import { FormattedMessage as Msg } from 'react-intl';
 
 import ActionFormTitle from './ActionFormTitle';
 import ActionFormInfoLabel from './ActionFormInfoLabel';
-import ActionInfoSection from './ActionInfoSection';
 import ResponseWidget from './ResponseWidget';
 import Button from '../../misc/Button';
 
@@ -24,22 +23,6 @@ export default class SingleActionForm extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            viewMode: undefined,
-            viewInfo: null,
-        };
-    }
-
-    componentDidMount() {
-        let node = ReactDOM.findDOMNode(this.refs.infoText);
-        if (node) {
-            if (node.clientHeight > 42) {
-                this.setState({
-                    viewMode: 'contracted',
-                });
-            }
-        }
     }
 
     render() {
@@ -73,28 +56,8 @@ export default class SingleActionForm extends React.Component {
             ];
         }
 
-        let actionInfoSection;
-
-        if (this.state.viewInfo) {
-            actionInfoSection = (
-                <ActionInfoSection
-                    action={ this.state.viewInfo }
-                    onViewInfo={ this.onViewInfo.bind(this, action) }
-                    isBooked={ this.props.isBooked }
-                    response={ this.props.response }
-                    onSignUp={ this.onSignUp.bind(this) }
-                    onUndo={ this.onUndo.bind(this) }
-                    />
-            );
-        }
-
-        let classes = cx('SingleActionForm', {
-            contracted: this.state.viewMode === 'contracted',
-            expanded: this.state.viewMode === 'expanded',
-        });
-
         return (
-            <div className={ classes }>
+            <div className="SingleActionForm">
                 <ActionFormTitle title={ activity }
                     organization={ organization } />
                 <ActionFormInfoLabel className="campaign"
@@ -110,7 +73,7 @@ export default class SingleActionForm extends React.Component {
                     <Button key="info"
                         className="SingleActionForm-infoButton"
                         labelMsg="campaignForm.action.infoButton"
-                        onClick={ this.onViewInfo.bind(this, action) }
+                        onClick={ this.onInfoButtonClick.bind(this, action) }
                         />
                     <ResponseWidget action={ action }
                         isBooked={ this.props.isBooked }
@@ -119,7 +82,6 @@ export default class SingleActionForm extends React.Component {
                         onUndo={ this.onUndo.bind(this) }
                         />
                 </div>
-                { actionInfoSection }
             </div>
         );
     }
@@ -142,10 +104,8 @@ export default class SingleActionForm extends React.Component {
         this.props.onChange(action, false);
     }
 
-    onViewInfo(action, ev) {
+    onInfoButtonClick(action, ev) {
         ev.preventDefault();
-        this.setState({
-            viewInfo: this.state.viewInfo? null : action
-        });
+        this.props.onSelect(action);
     }
 };

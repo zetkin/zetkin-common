@@ -7,7 +7,6 @@ import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
 import ActionFormInfoLabel from './ActionFormInfoLabel';
 import MultiActionFormItem from './MultiActionFormItem';
-import ActionInfoSection from './ActionInfoSection';
 import ResponseWidget from './ResponseWidget';
 
 const mapStateToProps = state => ({
@@ -21,14 +20,6 @@ export default class MultiLocationActionForm extends React.Component {
         bookings: PropTypes.array.isRequired,
         responses: PropTypes.array.isRequired,
     };
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            viewInfo: null
-        };
-    }
 
     render() {
         let actions = this.props.actions;
@@ -48,22 +39,6 @@ export default class MultiLocationActionForm extends React.Component {
 
         let content;
 
-        let actionInfoSection;
-
-        if (this.state.viewInfo) {
-            actionInfoSection = (
-                <ActionInfoSection
-                    action={ this.state.viewInfo }
-                    onViewInfo={
-                        this.onViewInfo.bind(this, this.state.action) }
-                    isBooked={ this.props.isBooked }
-                    response={ this.props.response }
-                    onSignUp={ this.onSignUp.bind(this) }
-                    onUndo={ this.onUndo.bind(this) }
-                    />
-            );
-        }
-
         let locItems = actions.map(action => {
             let id = action.get('id');
             let locLabel = action.getIn(['location', 'title']);
@@ -81,7 +56,7 @@ export default class MultiLocationActionForm extends React.Component {
                     isBooked={ isBooked } response={ response }
                     onSignUp={ this.onSignUp.bind(this) }
                     onUndo={ this.onUndo.bind(this) }
-                    onClick={ this.onViewInfo.bind(this, action) }
+                    onClick={ this.props.onSelect.bind(this, action) }
                     />
             );
         });
@@ -91,10 +66,6 @@ export default class MultiLocationActionForm extends React.Component {
                 { locItems }
             </ul>
         );
-
-        let classes = cx('MultiLocationActionForm', {
-            expanded: this.state.expanded,
-        });
 
         return (
             <div className="MultiLocationActionForm">
@@ -106,7 +77,6 @@ export default class MultiLocationActionForm extends React.Component {
                 <ActionFormInfoLabel className="time"
                     label={ timeLabel }/>
                 { content }
-                { actionInfoSection }
             </div>
         );
     }
@@ -143,12 +113,5 @@ export default class MultiLocationActionForm extends React.Component {
                 this.props.onChange(action, false);
             }
         }
-    }
-
-    onViewInfo(action, ev) {
-        ev.preventDefault();
-        this.setState({
-            viewInfo: this.state.viewInfo? null : action
-        });
     }
 }

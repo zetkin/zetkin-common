@@ -1,7 +1,9 @@
 import immutable from 'immutable';
 import { FormattedDate, injectIntl } from 'react-intl';
 import React from 'react';
+import ReactDOM from 'react-dom';
 
+import ActionInfoSection from './action/ActionInfoSection';
 import CampaignCalendar from './calendar/CampaignCalendar';
 import CampaignFilter from './filter/CampaignFilter';
 import SingleActionForm from './action/SingleActionForm';
@@ -33,6 +35,9 @@ export default class CampaignForm extends React.Component {
             filterActivities: [],
             filterCampaigns: [],
             filterLocations: [],
+            scrolled: false,
+            viewInfo: null,
+            infoSection: null,
         };
     }
 
@@ -40,6 +45,30 @@ export default class CampaignForm extends React.Component {
         this.setState({
             browserHasJavascript: true,
         });
+
+        this.onPageScroll = () => {
+            const campaignFormDOMNode =
+                ReactDOM.findDOMNode(this.refs.CampaignForm);
+
+            if (campaignFormDOMNode) {
+                const scrolled =
+                    (window.pageYOffset > campaignFormDOMNode.offsetTop);
+
+                if (scrolled != this.state.scrolled) {
+                    this.setState({
+                        scrolled: scrolled
+                    });
+                }
+            }
+        };
+
+        window.addEventListener('scroll', this.onPageScroll);
+
+        this.onPageScroll();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.onPageScroll);
     }
 
     render() {
@@ -63,6 +92,30 @@ export default class CampaignForm extends React.Component {
             && responseList.get('items')) {
 
             let filteredActions = actionList.get('items');
+
+            let actionInfoSection;
+            if (this.state.selectedActionId) {
+                let selectedAction = actionList
+                    .getIn(['items', this.state.selectedActionId.toString()]);
+
+                let response = !!responseList.get('items').find(item =>
+                            item.get('action_id') == selectedAction.get('id'));
+
+                let booked = !!userActionList.get('items').find(item =>
+                    item.get('id') == selectedAction.get('id'));
+
+                actionInfoSection = (
+                    <ActionInfoSection
+                        className="CampaignForm-actionInfoSection"
+                        action={ selectedAction }
+                        onClose={ this.onActionInfoClose.bind(this) }
+                        isBooked={ booked }
+                        response={ response }
+                        onSignUp={ this.onActionChange.bind(this, selectedAction, true) }
+                        onUndo={ this.onActionChange.bind(this, selectedAction, false) }
+                        />
+                );
+            }
 
             if (this.state.filterActivities.length) {
                 let activities = this.state.filterActivities;
@@ -197,13 +250,16 @@ export default class CampaignForm extends React.Component {
                                 className={ classes }>
                                 <SingleActionForm action={ action }
                                     isBooked={ booked } response={ response }
-                                    onChange={ this.onActionChange.bind(this) }/>
+                                    onSelect={ this.onActionSelect.bind(this)}
+                                    onChange={ this.onActionChange.bind(this)}
+                                    />
                             </li>
                         );
                     }
                     else {
                         let actions = group.actions;
                         let onActionChange = this.onActionChange.bind(this);
+                        let onActionSelect = this.onActionSelect.bind(this);
 
                         let responses = responseList.get('items')
                             .map(item => item.get('action_id').toString())
@@ -226,6 +282,7 @@ export default class CampaignForm extends React.Component {
                                     <MultiShiftActionForm actions={ actions }
                                         bookings={ bookings }
                                         responses={ responses }
+                                        onSelect={ onActionSelect }
                                         onChange={ onActionChange }/>
                                 </li>
                             );
@@ -237,6 +294,7 @@ export default class CampaignForm extends React.Component {
                                     <MultiLocationActionForm actions={ actions }
                                         bookings={ bookings }
                                         responses={ responses }
+                                        onSelect={ onActionSelect }
                                         onChange={ onActionChange }/>
                                 </li>
                             );
@@ -268,17 +326,6 @@ export default class CampaignForm extends React.Component {
                 );
             });
 
-            let submitButton = null;
-            if (!this.state.browserHasJavascript) {
-                let submitLabel = this.props.intl.formatMessage({
-                    id: 'campaignForm.submitLabel' });
-
-                submitButton = (
-                    <button className="CampaignForm-submit">
-                        { submitLabel }</button>
-                );
-            }
-
             let bookings = userActionList.get('items')
                 .map(item => item.get('id').toString())
                 .toList();
@@ -289,8 +336,12 @@ export default class CampaignForm extends React.Component {
 
             let allActions = actionList.get('items').toList();
 
+            let classes = cx('CampaignForm', {
+                    'CampaignForm-scrolled': this.state.scrolled
+                });
+
             return (
-                <div className="CampaignForm">
+                <div ref="CampaignForm" className={ classes }>
                     <CampaignCalendar
                         onSelectDay={ this.onCalendarSelectDay.bind(this) }
                         className="CampaignForm-calendar"
@@ -313,8 +364,8 @@ export default class CampaignForm extends React.Component {
                         </ul>
                         <input type="hidden" name="redirPath"
                             value={ this.props.redirPath }/>
-                        { submitButton }
                     </form>
+                    { actionInfoSection }
                 </div>
             );
         }
@@ -360,5 +411,17 @@ export default class CampaignForm extends React.Component {
         if (this.props.onResponse) {
             this.props.onResponse(action, checked);
         }
+    }
+
+    onActionInfoClose() {
+        this.setState({
+            selectedActionId: null,
+        })
+    }
+
+    onActionSelect(action) {
+        this.setState({
+            selectedActionId: action.get('id'),
+        })
     }
 }

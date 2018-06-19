@@ -22,32 +22,8 @@ export default class MultiShiftActionForm extends React.Component {
         responses: PropTypes.array.isRequired,
     };
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            viewInfo: null
-        };
-    }
-
     render() {
         let actions = this.props.actions;
-
-        let actionInfoSection;
-
-        if (this.state.viewInfo) {
-            actionInfoSection = (
-                <ActionInfoSection
-                    action={ this.state.viewInfo }
-                    onViewInfo={
-                        this.onViewInfo.bind(this, this.state.action) }
-                    isBooked={ this.props.isBooked }
-                    response={ this.props.response }
-                    onSignUp={ this.onSignUp.bind(this) }
-                    onUndo={ this.onUndo.bind(this) }
-                    />
-            );
-        }
 
         let orgItem = this.props.orgList.find(org =>
                 org.get('id') == actions[0].get('org_id'));
@@ -77,7 +53,7 @@ export default class MultiShiftActionForm extends React.Component {
                     isBooked={ isBooked } response={ response }
                     onSignUp={ this.onSignUp.bind(this) }
                     onUndo={ this.onUndo.bind(this) }
-                    onClick={ this.onViewInfo.bind(this, action) }
+                    onClick={ this.props.onSelect.bind(this, action) }
                     />
             );
         });
@@ -95,7 +71,6 @@ export default class MultiShiftActionForm extends React.Component {
                 <ul>
                     { shiftItems }
                 </ul>
-                { actionInfoSection }
             </div>
         );
     }
@@ -112,12 +87,5 @@ export default class MultiShiftActionForm extends React.Component {
         if (this.props.onChange) {
             this.props.onChange(action, false);
         }
-    }
-
-    onViewInfo(action, ev) {
-        ev.preventDefault();
-        this.setState({
-            viewInfo: this.state.viewInfo? null : action
-        });
     }
 }

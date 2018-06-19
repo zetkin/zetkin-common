@@ -63,6 +63,7 @@
 
 .Button.SingleActionForm-infoButton {
     @include button($color: white, $icon: $fa-var-search-plus);
+    padding: 0 1.2em;
     border: 1px solid darken(white, 15);
     &:focus {
         outline: none;

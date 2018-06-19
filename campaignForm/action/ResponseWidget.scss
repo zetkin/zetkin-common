@@ -5,6 +5,7 @@
 
     .ResponseWidget-button {
         @include button();
+        padding: 0 1.2em;
 
         &:focus {
             outline: none;
@@ -12,6 +13,7 @@
 
         &.signedUp {
             @include button($color: $c-ui-dark);
+            padding: 0 1.2em;
         }
     }
 
