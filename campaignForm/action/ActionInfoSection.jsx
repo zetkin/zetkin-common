@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import cx from 'classnames';
+import { FormattedMessage as Msg } from 'react-intl';
 
 import PropTypes from '../../../utils/PropTypes';
 
@@ -59,6 +60,14 @@ export default class ActionInfoSection extends React.Component {
             lng: action.getIn(['location', 'lng']),
         };
 
+        let currentNeed;
+        let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
+
+        if (this.props.showNeed && action.get('needs_participants')) {
+            currentNeed = <ActionFormInfoLabel className="showNeed"
+                    label={ currentNeedLabel }/>;
+        }
+
         return (
             <div className={ classes }>
                 <div className="ActionInfoSection-wrapper">
@@ -68,6 +77,7 @@ export default class ActionInfoSection extends React.Component {
                     <div className="ActionInfoSection-orgTitle">
                         { organization }
                     </div>
+                    { currentNeed }
                     <a href={ campaignLink } target="_blank">
                         <ActionFormInfoLabel className="campaign"
                         label={ campaign }/>

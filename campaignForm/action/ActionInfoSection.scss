@@ -27,6 +27,11 @@
     .ActionFormInfoLabel {
         font-size: 1.1em;
         color: $c-text;
+
+        &.showNeed {
+            font-size: 1em;
+            color: inherit;
+        }
     }
 
     .ActionInfoSection-infoText {

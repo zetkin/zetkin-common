@@ -15,4 +15,17 @@
     &.campaign:before {
         @include icon($fa-var-flag);
     }
+
+    &.showNeed {
+        font-size: 0.9em;
+        max-width: none;
+        padding: 0.7em;
+        margin: 0 -0.5em;
+        background-color: transparentize($c-brand-comp-light, 0.9);
+        &:before {
+            @include icon($fa-var-user-plus);
+            color: $c-brand-comp-light
+        }
+
+    }
 }

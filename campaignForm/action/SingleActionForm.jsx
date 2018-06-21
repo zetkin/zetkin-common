@@ -56,10 +56,19 @@ export default class SingleActionForm extends React.Component {
             ];
         }
 
+        let currentNeed;
+        let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
+
+        if (this.props.showNeed && action.get('needs_participants')) {
+            currentNeed = <ActionFormInfoLabel className="showNeed"
+                    label={ currentNeedLabel }/>;
+        }
+
         return (
             <div className="SingleActionForm">
                 <ActionFormTitle title={ activity }
                     organization={ organization } />
+                { currentNeed }
                 <ActionFormInfoLabel className="campaign"
                     label={ campaign }/>
                 <ActionFormInfoLabel className="location"

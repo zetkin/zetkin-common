@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import cx from 'classnames';
+import { FormattedMessage as Msg } from 'react-intl';
 
 import Link from '../../misc/FormattedLink';
 import PropTypes from '../../../utils/PropTypes';
@@ -39,6 +40,8 @@ export default class MultiLocationActionForm extends React.Component {
 
         let content;
 
+        let hasNeed = false;
+
         let locItems = actions.map(action => {
             let id = action.get('id');
             let locLabel = action.getIn(['location', 'title']);
@@ -47,6 +50,10 @@ export default class MultiLocationActionForm extends React.Component {
                 .indexOf(action.get('id').toString()) >= 0;
             let response = this.props.responses
                 .indexOf(action.get('id').toString()) >= 0;
+
+            if (action.get('needs_participants')) {
+                hasNeed = true;
+            }
 
             return (
                 <MultiActionFormItem key={ locLabel }
@@ -67,11 +74,20 @@ export default class MultiLocationActionForm extends React.Component {
             </ul>
         );
 
+        let currentNeed;
+        let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
+
+        if (this.props.showNeed && hasNeed) {
+            currentNeed = <ActionFormInfoLabel className="showNeed"
+                    label={ currentNeedLabel }/>;
+        }
+
         return (
             <div className="MultiLocationActionForm">
                 <ActionFormTitle
                     title={ actions[0].getIn(['activity', 'title']) }
                     organization={ organization }/>
+                { currentNeed }
                 <ActionFormInfoLabel className="campaign"
                     label={ actions[0].getIn(['campaign', 'title']) }/>
                 <ActionFormInfoLabel className="time"

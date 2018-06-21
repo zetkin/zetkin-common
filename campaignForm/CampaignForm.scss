@@ -5,7 +5,7 @@
     float:left;
 }
 
-.CampaignForm-calendar {
+.CampaignForm-sidebar {
     @include col(10,12);
     @include col-offset(1, 12);
 
@@ -14,6 +14,7 @@
         @include col-offset(0, 12);
         position: absolute;
         left: 0;
+        overflow-y: scroll;
     }
 
     @include large-screen {
@@ -22,8 +23,51 @@
     }
 }
 
+.CampaignForm-filter {
+
+}
+
+.CampaignForm-filter
+.CampaignForm-filterShowNeed {
+    margin: 2em -15%;
+    padding: 2em;
+    background-color: $c-brand-comp-light;
+    color: white;
+    text-align: center;
+
+    @include medium-screen {
+        margin: 2em -0.5em;
+    }
+
+    @include large-screen {
+        font-size: 0.9em;
+        padding: 1em;
+    }
+
+    &:before {
+        @include icon($fa-var-user-plus);
+        font-size: 1.8em;
+        display: inline-block;
+        width: 20%;
+        margin: 0;
+        vertical-align: middle;
+    }
+
+    p {
+        display: inline-block;
+        width: 80%;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .Button {
+        @include button($color:white, $transparent:true);
+        line-height: 2em;
+    }
+}
+
 .CampaignForm-scrolled {
-    .CampaignForm-calendar {
+    .CampaignForm-sidebar {
         @include medium-screen {
             position: fixed;
             z-index: 99;
@@ -32,17 +76,6 @@
             left: 0;
             right: 0;
         }
-    }
-}
-
-.CampaignForm-filter {
-    @include col(10,12);
-    @include col-offset(1, 12);
-    margin-top: 1em;
-
-    @include large-screen {
-        @include col(4,12);
-        @include col-offset(0, 12);
     }
 }
 
@@ -76,7 +109,7 @@
         @include col(12,12);
 
         @include large-screen {
-            @include col(6,12, $first:true, $last:true);
+            @include col(5,12, $first:true, $last:true);
         }
     }
 
@@ -90,6 +123,19 @@
         &.signed {
             &:before {
                 @include icon($fa-var-calendar-check-o);
+            }
+        }
+        &.need {
+            &:before {
+                @include icon($fa-var-user-plus);
+            }
+        }
+
+        span {
+            display: block;
+
+            @include medium-screen {
+                display: initial;
             }
         }
     }
@@ -163,6 +209,7 @@
 
         > div {
             position: relative;
+            padding: 0 0.5em;
 
             ul {
                 padding: 0;

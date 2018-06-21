@@ -1,5 +1,6 @@
 import immutable from 'immutable';
-import { FormattedDate, injectIntl } from 'react-intl';
+import { FormattedDate, injectIntl, FormattedMessage as Msg }
+    from 'react-intl';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -10,6 +11,7 @@ import SingleActionForm from './action/SingleActionForm';
 import MultiShiftActionForm from './action/MultiShiftActionForm';
 import MultiLocationActionForm from './action/MultiLocationActionForm';
 import LoadingIndicator from '../misc/LoadingIndicator';
+import Button from '../misc/Button';
 import PropTypes from '../../utils/PropTypes';
 import cx from 'classnames';
 
@@ -38,6 +40,8 @@ export default class CampaignForm extends React.Component {
             scrolled: false,
             viewInfo: null,
             infoSection: null,
+            showNeed: false,
+            showedNeed: false,
         };
     }
 
@@ -113,8 +117,15 @@ export default class CampaignForm extends React.Component {
                         response={ response }
                         onSignUp={ this.onActionChange.bind(this, selectedAction, true) }
                         onUndo={ this.onActionChange.bind(this, selectedAction, false) }
+                        showNeed={ this.state.showNeed
+                            || this.state.showedNeed }
                         />
                 );
+            }
+
+            if (this.state.showNeed && this.props.needFilterEnabled) {
+                filteredActions = filteredActions.filter(action =>
+                    action.get('needs_participants'));
             }
 
             if (this.state.filterActivities.length) {
@@ -145,8 +156,6 @@ export default class CampaignForm extends React.Component {
             actionsByDay = actionsByDay.sortBy((val, key) => key);
 
             let dayComponents = actionsByDay.toList().map((actions, key) => {
-                let actionCompontnts = [];
-
                 let groups = [];
 
                 // Sort by start time
@@ -252,6 +261,8 @@ export default class CampaignForm extends React.Component {
                                     isBooked={ booked } response={ response }
                                     onSelect={ this.onActionSelect.bind(this)}
                                     onChange={ this.onActionChange.bind(this)}
+                                    showNeed={ this.state.showNeed
+                                        || this.state.showedNeed }
                                     />
                             </li>
                         );
@@ -283,7 +294,9 @@ export default class CampaignForm extends React.Component {
                                         bookings={ bookings }
                                         responses={ responses }
                                         onSelect={ onActionSelect }
-                                        onChange={ onActionChange }/>
+                                        onChange={ onActionChange }
+                                        showNeed={ this.state.showNeed
+                                            || this.state.showedNeed }/>
                                 </li>
                             );
                         }
@@ -295,7 +308,9 @@ export default class CampaignForm extends React.Component {
                                         bookings={ bookings }
                                         responses={ responses }
                                         onSelect={ onActionSelect }
-                                        onChange={ onActionChange }/>
+                                        onChange={ onActionChange }
+                                        showNeed={ this.state.showNeed
+                                            || this.state.showedNeed }/>
                                 </li>
                             );
                         }
@@ -340,16 +355,61 @@ export default class CampaignForm extends React.Component {
                     'CampaignForm-scrolled': this.state.scrolled
                 });
 
+            let message = this.props.message;
+
+            let filter;
+
+            if(this.props.needFilterEnabled) {
+
+                let needParticipants = filteredActions.filter(action =>
+                    action.get('needs_participants'));
+
+                let needParticipantsCount = needParticipants.size;
+
+                if (this.state.showNeed) {
+                    message = (
+                        <div className="CampaignMessage">
+                            <h2 className="CampaignMessage-title need">
+                            <Msg id="campaignForm.message.showNeed.title"
+                            /></h2>
+                            <Msg tagName="p"
+                                values={{count: needParticipantsCount}}
+                                id="campaignForm.message.showNeed.p"
+                            />
+                        </div>
+                    );
+                }
+
+                let showNeedButtonLabel = this.state.showNeed?
+                    "campaignForm.filter.showNeed.button.hide":
+                    "campaignForm.filter.showNeed.button.show";
+
+                filter = (
+                    <div className="CampaignForm-filter">
+                        <div className="CampaignForm-filterShowNeed">
+                            <p><Msg values={{count: needParticipantsCount}}
+                                id="campaignForm.filter.showNeed.p"/></p>
+                            <Button
+                                onClick={ this.onShowNeedClick.bind(this) }
+                                labelMsg={ showNeedButtonLabel }/>
+                        </div>
+                    </div>
+                );
+            }
+
             return (
                 <div ref="CampaignForm" className={ classes }>
-                    { this.props.message }
-                    <CampaignCalendar
-                        onSelectDay={ this.onCalendarSelectDay.bind(this) }
-                        className="CampaignForm-calendar"
-                        actions={ allActions }
-                        responses={ responses }
-                        bookings={ bookings }
-                        />
+                    { message }
+                    <div className="CampaignForm-sidebar">
+                        <CampaignCalendar
+                            onSelectDay={ this.onCalendarSelectDay.bind(this) }
+                            className="CampaignForm-calendar"
+                            actions={ filteredActions.toList() }
+                            responses={ responses }
+                            bookings={ bookings }
+                            />
+                        { filter }
+                    </div>
                     {/*<CampaignFilter
                         className="CampaignForm-filter"
                         actions={ allActions }
@@ -423,6 +483,13 @@ export default class CampaignForm extends React.Component {
     onActionSelect(action) {
         this.setState({
             selectedActionId: action.get('id'),
+        })
+    }
+
+    onShowNeedClick() {
+        this.setState({
+            showNeed: !this.state.showNeed,
+            showedNeed: true,
         })
     }
 }
