@@ -342,6 +342,7 @@ export default class CampaignForm extends React.Component {
 
             return (
                 <div ref="CampaignForm" className={ classes }>
+                    { this.props.message }
                     <CampaignCalendar
                         onSelectDay={ this.onCalendarSelectDay.bind(this) }
                         className="CampaignForm-calendar"

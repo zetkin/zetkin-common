@@ -9,16 +9,22 @@
     @include col(10,12);
     @include col-offset(1, 12);
 
+    @include medium-screen {
+        @include col(5,12);
+        @include col-offset(0, 12);
+        position: absolute;
+        left: 0;
+    }
+
     @include large-screen {
         @include col(3,12);
         @include col-offset(0, 12);
-        position: absolute;
     }
 }
 
 .CampaignForm-scrolled {
     .CampaignForm-calendar {
-        @include large-screen {
+        @include medium-screen {
             position: fixed;
             z-index: 99;
             top: 0;
@@ -40,11 +46,64 @@
     }
 }
 
+.CampaignMessage {
+    @include col(12,12);
+
+    @include medium-screen {
+        @include col(7,12);
+        @include col-offset(5, 12);
+    }
+
+    @include large-screen {
+        @include col(8.8,12);
+        @include col-offset(3.2, 12);
+    }
+
+    & > * {
+        color: $c-text-contrast;
+    }
+
+    padding: 2em;
+    margin-top: 2em;
+    background-color: $c-brand-comp-light;
+
+    @include large-screen {
+        padding: 2em;
+    }
+
+    p {
+        line-height: 1.5em;
+        @include col(12,12);
+
+        @include large-screen {
+            @include col(6,12, $first:true, $last:true);
+        }
+    }
+
+    a {
+        display: block;
+    }
+
+    h2 {
+        margin: 0;
+
+        &.signed {
+            &:before {
+                @include icon($fa-var-calendar-check-o);
+            }
+        }
+    }
+}
+
 .CampaignForm-form {
     @include col(12,12);
 
+    @include medium-screen {
+        @include col(7,12);
+        @include col-offset(5, 12);
+    }
+
     @include large-screen {
-        // position: absolute;
         @include col(4,12);
         @include col-offset(3.2, 12);
     }
@@ -58,14 +117,27 @@
         bottom: 0;
         left: 0;
         right: 0;
+
+        @include medium-screen {
+            @include col-offset(5, 12);
+        }
+        @include large-screen {
+            margin-left: auto;
+        }
     }
 }
 
 .CampaignForm-actionInfoSection {
     position: absolute;
     right: 0;
+    left: 0;
     top: 0;
     height: 100vh;
+
+    @include medium-screen {
+        @include col(7,12);
+        left: auto;
+    }
 
     @include large-screen {
         @include col(4.5,12);
@@ -115,6 +187,10 @@
             span {
                 font-size: 1.3em;
                 margin-right: 0.5em;
+
+                @include medium-screen {
+                    font-size: 1.1em;
+                }
             }
 
             span + span {
