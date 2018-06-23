@@ -369,7 +369,7 @@ export default class CampaignForm extends React.Component {
 
             let filter;
 
-            if(this.props.needFilterEnabled) {
+            if(this.props.needFilterEnabled && numUnderStaffedActions) {
                 if (this.state.showNeed) {
                     message = (
                         <div className="CampaignMessage">
