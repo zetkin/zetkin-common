@@ -373,8 +373,8 @@ export default class CampaignForm extends React.Component {
             if(this.props.needFilterEnabled && numUnderStaffedActions) {
                 if (this.state.showNeed) {
                     message = (
-                        <div className="CampaignMessage">
-                            <h2 className="CampaignMessage-title need">
+                        <div className="CampaignForm-message">
+                            <h2 className="CampaignForm-messageTitle need">
                             <Msg id="campaignForm.message.showNeed.title"
                             /></h2>
                             <Msg tagName="p"

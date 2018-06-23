@@ -79,7 +79,8 @@
     }
 }
 
-.CampaignMessage {
+.CampaignForm
+.CampaignForm-message {
     @include col(12,12);
 
     @include medium-screen {
