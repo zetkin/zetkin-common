@@ -381,6 +381,10 @@ export default class CampaignForm extends React.Component {
                                 values={{count: numUnderStaffedActions}}
                                 id="campaignForm.message.showNeed.p"
                             />
+                            <Button
+                                onClick={ this.onShowNeedClick.bind(this) }
+                                labelMsg="campaignForm.filter.showNeed.button.hide"
+                                />
                         </div>
                     );
                 }

@@ -111,6 +111,7 @@
 
         @include large-screen {
             @include col(5,12, $first:true, $last:true);
+            display: block;
         }
     }
 
@@ -139,6 +140,11 @@
                 display: initial;
             }
         }
+    }
+
+    .Button {
+        @include button($color:white, $transparent:true);
+        line-height: 2em;
     }
 }
 
