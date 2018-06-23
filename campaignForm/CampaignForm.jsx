@@ -1,13 +1,17 @@
 import immutable from 'immutable';
-import { FormattedDate, injectIntl } from 'react-intl';
+import { FormattedDate, injectIntl, FormattedMessage as Msg }
+    from 'react-intl';
 import React from 'react';
+import ReactDOM from 'react-dom';
 
+import ActionInfoSection from './action/ActionInfoSection';
 import CampaignCalendar from './calendar/CampaignCalendar';
 import CampaignFilter from './filter/CampaignFilter';
 import SingleActionForm from './action/SingleActionForm';
 import MultiShiftActionForm from './action/MultiShiftActionForm';
 import MultiLocationActionForm from './action/MultiLocationActionForm';
 import LoadingIndicator from '../misc/LoadingIndicator';
+import Button from '../misc/Button';
 import PropTypes from '../../utils/PropTypes';
 import cx from 'classnames';
 
@@ -33,6 +37,11 @@ export default class CampaignForm extends React.Component {
             filterActivities: [],
             filterCampaigns: [],
             filterLocations: [],
+            scrolled: false,
+            viewInfo: null,
+            infoSection: null,
+            showNeed: false,
+            showedNeed: false,
         };
     }
 
@@ -40,6 +49,30 @@ export default class CampaignForm extends React.Component {
         this.setState({
             browserHasJavascript: true,
         });
+
+        this.onPageScroll = () => {
+            const campaignFormDOMNode =
+                ReactDOM.findDOMNode(this.refs.CampaignForm);
+
+            if (campaignFormDOMNode) {
+                const scrolled =
+                    (window.pageYOffset > campaignFormDOMNode.offsetTop);
+
+                if (scrolled != this.state.scrolled) {
+                    this.setState({
+                        scrolled: scrolled
+                    });
+                }
+            }
+        };
+
+        window.addEventListener('scroll', this.onPageScroll);
+
+        this.onPageScroll();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.onPageScroll);
     }
 
     render() {
@@ -62,7 +95,35 @@ export default class CampaignForm extends React.Component {
         else if (actionList.get('items') && userActionList.get('items')
             && responseList.get('items')) {
 
+            let numUnderStaffedActions = 0;
             let filteredActions = actionList.get('items');
+
+            let actionInfoSection;
+            if (this.state.selectedActionId) {
+                let selectedAction = actionList
+                    .getIn(['items', this.state.selectedActionId.toString()]);
+
+                let response = !!responseList.get('items').find(item =>
+                            item.get('action_id') == selectedAction.get('id'));
+
+                let booked = !!userActionList.get('items').find(item =>
+                    item.get('id') == selectedAction.get('id'));
+
+                actionInfoSection = (
+                    <ActionInfoSection
+                        key={ selectedAction.get('id') }
+                        className="CampaignForm-actionInfoSection"
+                        action={ selectedAction }
+                        onClose={ this.onActionInfoClose.bind(this) }
+                        isBooked={ booked }
+                        response={ response }
+                        onSignUp={ this.onActionChange.bind(this, selectedAction, true) }
+                        onUndo={ this.onActionChange.bind(this, selectedAction, false) }
+                        showNeed={ this.state.showNeed
+                            || this.state.showedNeed }
+                        />
+                );
+            }
 
             if (this.state.filterActivities.length) {
                 let activities = this.state.filterActivities;
@@ -82,6 +143,20 @@ export default class CampaignForm extends React.Component {
                     .indexOf(action.getIn(['location', 'id']).toString()) >= 0);
             }
 
+            if (this.props.needFilterEnabled) {
+                let underStaffedActions = filteredActions.filter(action => {
+                    const numRequired = action.get('num_participants_required');
+                    const numAvailable = action.get('num_participants_available');
+                    return numRequired > numAvailable;
+                });
+
+                numUnderStaffedActions = underStaffedActions.size;
+
+                if (this.state.showNeed) {
+                    filteredActions = underStaffedActions;
+                }
+            }
+
             let actionsByDay = filteredActions.groupBy(action => {
                 let startTime = Date.create(action.get('start_time'),
                     { fromUTC: true, setUTC: true });
@@ -92,8 +167,6 @@ export default class CampaignForm extends React.Component {
             actionsByDay = actionsByDay.sortBy((val, key) => key);
 
             let dayComponents = actionsByDay.toList().map((actions, key) => {
-                let actionCompontnts = [];
-
                 let groups = [];
 
                 // Sort by start time
@@ -197,13 +270,18 @@ export default class CampaignForm extends React.Component {
                                 className={ classes }>
                                 <SingleActionForm action={ action }
                                     isBooked={ booked } response={ response }
-                                    onChange={ this.onActionChange.bind(this) }/>
+                                    onSelect={ this.onActionSelect.bind(this)}
+                                    onChange={ this.onActionChange.bind(this)}
+                                    showNeed={ this.state.showNeed
+                                        || this.state.showedNeed }
+                                    />
                             </li>
                         );
                     }
                     else {
                         let actions = group.actions;
                         let onActionChange = this.onActionChange.bind(this);
+                        let onActionSelect = this.onActionSelect.bind(this);
 
                         let responses = responseList.get('items')
                             .map(item => item.get('action_id').toString())
@@ -226,7 +304,10 @@ export default class CampaignForm extends React.Component {
                                     <MultiShiftActionForm actions={ actions }
                                         bookings={ bookings }
                                         responses={ responses }
-                                        onChange={ onActionChange }/>
+                                        onSelect={ onActionSelect }
+                                        onChange={ onActionChange }
+                                        showNeed={ this.state.showNeed
+                                            || this.state.showedNeed }/>
                                 </li>
                             );
                         }
@@ -237,7 +318,10 @@ export default class CampaignForm extends React.Component {
                                     <MultiLocationActionForm actions={ actions }
                                         bookings={ bookings }
                                         responses={ responses }
-                                        onChange={ onActionChange }/>
+                                        onSelect={ onActionSelect }
+                                        onChange={ onActionChange }
+                                        showNeed={ this.state.showNeed
+                                            || this.state.showedNeed }/>
                                 </li>
                             );
                         }
@@ -268,17 +352,6 @@ export default class CampaignForm extends React.Component {
                 );
             });
 
-            let submitButton = null;
-            if (!this.state.browserHasJavascript) {
-                let submitLabel = this.props.intl.formatMessage({
-                    id: 'campaignForm.submitLabel' });
-
-                submitButton = (
-                    <button className="CampaignForm-submit">
-                        { submitLabel }</button>
-                );
-            }
-
             let bookings = userActionList.get('items')
                 .map(item => item.get('id').toString())
                 .toList();
@@ -289,23 +362,72 @@ export default class CampaignForm extends React.Component {
 
             let allActions = actionList.get('items').toList();
 
+            let classes = cx('CampaignForm', {
+                    'showingNeed': this.state.showNeed,
+                    'CampaignForm-scrolled': this.state.scrolled,
+                });
+
+            let message = this.props.message;
+
+            let filter;
+
+            if(this.props.needFilterEnabled && numUnderStaffedActions) {
+                if (this.state.showNeed) {
+                    message = (
+                        <div className="CampaignForm-message">
+                            <h2 className="CampaignForm-messageTitle need">
+                            <Msg id="campaignForm.message.showNeed.title"
+                            /></h2>
+                            <Msg tagName="p"
+                                values={{count: numUnderStaffedActions}}
+                                id="campaignForm.message.showNeed.p"
+                            />
+                            <Button
+                                onClick={ this.onShowNeedClick.bind(this) }
+                                labelMsg="campaignForm.filter.showNeed.button.hide"
+                                />
+                        </div>
+                    );
+                }
+
+                let showNeedButtonLabel = this.state.showNeed?
+                    "campaignForm.filter.showNeed.button.hide":
+                    "campaignForm.filter.showNeed.button.show";
+
+                filter = (
+                    <div className="CampaignForm-filter">
+                        <div className="CampaignForm-filterShowNeed">
+                            <p><Msg values={{count: numUnderStaffedActions}}
+                                id="campaignForm.filter.showNeed.p"/></p>
+                            <Button
+                                onClick={ this.onShowNeedClick.bind(this) }
+                                labelMsg={ showNeedButtonLabel }/>
+                        </div>
+                    </div>
+                );
+            }
+
             return (
-                <div className="CampaignForm">
-                    <CampaignCalendar
-                        onSelectDay={ this.onCalendarSelectDay.bind(this) }
-                        className="CampaignForm-calendar"
-                        actions={ allActions }
-                        responses={ responses }
-                        bookings={ bookings }
-                        />
-                    <CampaignFilter
+                <div ref="CampaignForm" className={ classes }>
+                    { message }
+                    <div className="CampaignForm-sidebar">
+                        <CampaignCalendar
+                            onSelectDay={ this.onCalendarSelectDay.bind(this) }
+                            className="CampaignForm-calendar"
+                            actions={ filteredActions.toList() }
+                            responses={ responses }
+                            bookings={ bookings }
+                            />
+                        { filter }
+                    </div>
+                    {/*<CampaignFilter
                         className="CampaignForm-filter"
                         actions={ allActions }
                         selectedActivities={ this.state.filterActivities }
                         selectedCampaigns={ this.state.filterCampaigns }
                         selectedLocations={ this.state.filterLocations }
                         onChange={ this.onFilterChange.bind(this) }
-                        />
+                        />*/}
                     <form method="post" action="/forms/actionResponse"
                         className="CampaignForm-form">
                         <ul className="CampaignForm-days">
@@ -313,8 +435,8 @@ export default class CampaignForm extends React.Component {
                         </ul>
                         <input type="hidden" name="redirPath"
                             value={ this.props.redirPath }/>
-                        { submitButton }
                     </form>
+                    { actionInfoSection }
                 </div>
             );
         }
@@ -329,7 +451,7 @@ export default class CampaignForm extends React.Component {
 
         let target = document.getElementById(fragment);
         let rect = target.getBoundingClientRect();
-        let scrollTop = rect.top + offset;
+        let scrollTop = rect.top + offset + window.scrollY;
 
         let animatedScrollTo = require('animated-scrollto');
         let duration = 200 + scrollTop / 15;
@@ -360,5 +482,24 @@ export default class CampaignForm extends React.Component {
         if (this.props.onResponse) {
             this.props.onResponse(action, checked);
         }
+    }
+
+    onActionInfoClose() {
+        this.setState({
+            selectedActionId: null,
+        })
+    }
+
+    onActionSelect(action) {
+        this.setState({
+            selectedActionId: action.get('id'),
+        })
+    }
+
+    onShowNeedClick() {
+        this.setState({
+            showNeed: !this.state.showNeed,
+            showedNeed: true,
+        })
     }
 }

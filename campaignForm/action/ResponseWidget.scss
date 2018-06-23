@@ -3,28 +3,34 @@
     width: 100%;
     margin-bottom: 1em;
 
-    @include medium-screen {
-        position: absolute;
-        right: 1.5em;
-        bottom: 40%;
-        bottom: calc(50% - 2em);
-        width: 100px;
+    .ResponseWidget-button {
+        @include button();
+        padding: 0 1.2em;
+
+        &:focus {
+            outline: none;
+        }
+
+        &.signedUp {
+            @include button($color: $c-ui-dark);
+            padding: 0 1.2em;
+        }
     }
 
     span {
-        display: inline-block;
         color: lighten($c-text, 20);
-        font-size: 0.8em;
     }
 
     & > span {
+        display: inline-block;
+        text-align: center;
+        font-size: 1.1em;
+        margin-left: -0.5em;
+
         &:before {
             @include icon($fa-var-check);
             color: $c-brand-main;
             font-size: 1.2em;
-            margin-right: 0.6em;
         }
     }
-
-    @include checkbox-wrapper;
 }

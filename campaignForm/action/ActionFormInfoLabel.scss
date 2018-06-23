@@ -1,0 +1,31 @@
+.ActionFormInfoLabel {
+    color: lighten($c-text, 20);
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0.25em 0;
+
+    &.location:before {
+        @include icon($fa-var-map-marker);
+    }
+    &.time:before {
+        @include icon($fa-var-clock-o);
+    }
+    &.campaign:before {
+        @include icon($fa-var-flag);
+    }
+
+    &.showNeed {
+        font-size: 0.9em;
+        max-width: none;
+        padding: 0.7em;
+        margin: 0 -0.5em;
+        background-color: transparentize($c-brand-comp-light, 0.9);
+        &:before {
+            @include icon($fa-var-user-plus);
+            color: $c-brand-comp-light
+        }
+
+    }
+}

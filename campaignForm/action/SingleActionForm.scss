@@ -1,3 +1,5 @@
+.SingleActionForm {
+
 .SingleActionForm-title {
     margin: 0.5em 0 0.2em;
     font-size: 1.2em;
@@ -18,14 +20,54 @@
     }
 }
 .SingleActionForm-info {
+    position: relative;
     color: lighten($c-text, 30);
-    font-size: 0.8em;
+    font-size: 0.9em;
     line-height: 1.5em;
-    margin: 0 7.5em 0 0;
+    // margin: 0 7.5em 0 0;
     overflow: hidden;
     text-overflow: ellipsis;
     max-height: 3em;
     transition: max-height 0.5s;
+
+    &:after {
+        @include icon($fa-var-arrow-right);
+        position: absolute;
+        display: block;
+        right: 0;
+        bottom: 0;
+        color: lighten($c-text, 50);
+    }
+}
+
+.SingleActionForm-buttons {
+    position: relative;
+    width: 100%;
+    height: 3em;
+    margin: 1em 0;
+
+    & > * {
+        position: absolute;
+        width: 47%;
+    }
+    & > *:first-child {
+        left: 0;
+    }
+    & > *:last-child {
+        right: 0;
+        * {
+            width: 100%;
+        }
+    }
+}
+
+.Button.SingleActionForm-infoButton {
+    @include button($color: white, $icon: $fa-var-search-plus);
+    padding: 0 1.2em;
+    border: 1px solid darken(white, 15);
+    &:focus {
+        outline: none;
+    }
 }
 
 .SingleActionForm .ResponseWidget {
@@ -61,4 +103,5 @@
     .SingleActionForm-toggleExpandButton {
         @include circle-button($icon:$fa-var-caret-up);
     }
+}
 }

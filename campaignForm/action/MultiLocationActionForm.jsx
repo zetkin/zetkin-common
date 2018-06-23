@@ -1,42 +1,26 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import cx from 'classnames';
+import { FormattedMessage as Msg } from 'react-intl';
 
 import Link from '../../misc/FormattedLink';
 import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
-import ActionFormLocation from './ActionFormLocation';
-import ActionFormTime from './ActionFormTime';
+import ActionFormInfoLabel from './ActionFormInfoLabel';
+import MultiActionFormItem from './MultiActionFormItem';
 import ResponseWidget from './ResponseWidget';
 
+const mapStateToProps = state => ({
+    orgList: state.getIn(['orgs', 'orgList', 'items'])
+});
 
+@connect(mapStateToProps)
 export default class MultiLocationActionForm extends React.Component {
     static propTypes = {
         actions: PropTypes.array.isRequired,
         bookings: PropTypes.array.isRequired,
         responses: PropTypes.array.isRequired,
     };
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            expanded: true,
-        };
-    }
-
-    componentDidMount() {
-        let numBookings = this.props.bookings.length;
-        let numResponses = this.props.responses.length;
-        let numActions = this.props.actions.length;
-
-        if (numBookings === 0 && (numResponses === numActions || !numResponses)
-            || numBookings == numActions) {
-            // All yes or all no means we can collapse
-            this.setState({
-                expanded: false,
-            });
-        }
-    }
 
     render() {
         let actions = this.props.actions;
@@ -50,84 +34,99 @@ export default class MultiLocationActionForm extends React.Component {
         let timeLabel = startTime.format('{HH}:{mm}')
             + ' - ' + endTime.format('{HH}:{mm}');
 
+        let orgItem = this.props.orgList.find(org =>
+                org.get('id') == actions[0].get('org_id'));
+        let organization = orgItem.get('title');
+
         let content;
 
-        if (this.state.expanded) {
-            let locItems = actions.map(action => {
-                let id = action.get('id');
-                let locLabel = action.getIn(['location', 'title']);
+        let hasNeed = false;
 
-                let isBooked = this.props.bookings
-                    .indexOf(action.get('id').toString()) >= 0;
-                let response = this.props.responses
-                    .indexOf(action.get('id').toString()) >= 0;
+        let locItems = actions.map(action => {
+            let id = action.get('id');
+            let locLabel = action.getIn(['location', 'title']);
 
-                return (
-                    <li key={ locLabel }
-                        className="MultiLocationActionForm-locationItem">
-                        <ActionFormLocation location={ locLabel } />
-                        <ResponseWidget action={ action }
-                            isBooked={ isBooked } response={ response }
-                            onChange={ this.onChange.bind(this) }/>
-                    </li>
-                );
-            });
+            let isBooked = this.props.bookings
+                .indexOf(action.get('id').toString()) >= 0;
+            let response = this.props.responses
+                .indexOf(action.get('id').toString()) >= 0;
 
-            content = (
-                <ul className="MultiLocationactionForm-locations">
-                    { locItems }
-                </ul>
+            if (action.get('num_participants_required') > action.get('num_participants_available')) {
+                hasNeed = true;
+            }
+
+            return (
+                <MultiActionFormItem key={ locLabel }
+                    className="MultiLocationActionForm-locationItem"
+                    labelClass="location" label={ locLabel }
+                    action={ action }
+                    isBooked={ isBooked } response={ response }
+                    onSignUp={ this.onSignUp.bind(this) }
+                    onUndo={ this.onUndo.bind(this) }
+                    onClick={ this.props.onSelect.bind(this, action) }
+                    />
             );
-        }
-        else {
-            let isBooked = this.props.bookings.length === actions.length;
-            let response = this.props.responses.length === actions.length;
-
-            content = [
-                <Link key="multiLocationLink"
-                    className="MultiLocationActionForm-locationsLink"
-                    msgId="campaignForm.action.multiLocationLabel"
-                    msgValues={{ count: actions.length }}
-                    onClick={ this.onClickExpand.bind(this) }/>,
-                <ResponseWidget key="responseWidget"
-                    action={ actions[0] }
-                    isBooked={ isBooked }
-                    response={ response }
-                    onChange={ this.onChangeAll.bind(this) }/>
-            ];
-        }
-
-        let classes = cx('MultiLocationActionForm', {
-            expanded: this.state.expanded,
         });
+
+        content = (
+            <ul>
+                { locItems }
+            </ul>
+        );
+
+        let currentNeed;
+        let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
+
+        if (this.props.showNeed && hasNeed) {
+            currentNeed = <ActionFormInfoLabel className="showNeed"
+                    label={ currentNeedLabel }/>;
+        }
 
         return (
             <div className="MultiLocationActionForm">
                 <ActionFormTitle
-                    title={ actions[0].getIn(['activity', 'title']) } />
-                <ActionFormTime time={ timeLabel } />
+                    title={ actions[0].getIn(['activity', 'title']) }
+                    organization={ organization }/>
+                { currentNeed }
+                <ActionFormInfoLabel className="campaign"
+                    label={ actions[0].getIn(['campaign', 'title']) }/>
+                <ActionFormInfoLabel className="time"
+                    label={ timeLabel }/>
                 { content }
             </div>
         );
     }
 
-    onClickExpand() {
-        this.setState({
-            expanded: true,
-        });
-    }
-
-    onChange(action, ev) {
+    onSignUp(action, ev) {
+        ev.stopPropagation();
         if (this.props.onChange) {
-            this.props.onChange(action, ev.target.checked);
+            this.props.onChange(action, true);
         }
     }
 
-    onChangeAll(action, ev) {
+    onUndo(action, ev) {
+        ev.stopPropagation();
+        if (this.props.onChange) {
+            this.props.onChange(action, false);
+        }
+    }
+
+    onSignUpAll(action, ev) {
+        ev.preventDefault();
         if (this.props.onChange) {
             for (let i = 0; i < this.props.actions.length; i++) {
                 let action = this.props.actions[i];
-                this.props.onChange(action, ev.target.checked);
+                this.props.onChange(action, true);
+            }
+        }
+    }
+
+    onUndoAll(action, ev) {
+        ev.preventDefault();
+        if (this.props.onChange) {
+            for (let i = 0; i < this.props.actions.length; i++) {
+                let action = this.props.actions[i];
+                this.props.onChange(action, false);
             }
         }
     }

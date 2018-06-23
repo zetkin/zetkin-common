@@ -20,14 +20,24 @@ export default class CampaignCalendarDay extends React.Component {
             });
 
         let link = null;
+        let fragment = date.format('{yyyy}-{MM}-{dd}');
         if (this.props.hasBookings || this.props.numActions > 0) {
-            let fragment = date.format('{yyyy}-{MM}-{dd}');
+
             let href = '#' + fragment;
 
             link = (
                 <a className="CampaignCalendarDay-link"
                     onClick={ this.onClick.bind(this, fragment) }
-                    href={ href }/>
+                    href={ href }>
+                        { date.format('{d}') }
+                    </a>
+            );
+        }
+        else {
+            link = (
+                <a className="CampaignCalendarDay-link">
+                        { date.format('{d}') }
+                </a>
             );
         }
 

@@ -1,0 +1,41 @@
+.MultiActionFormItem {
+    display: inline-block;
+    width: 100%;
+    border-bottom: 1px solid darken($c-ui-bg,5);
+    clear: both;
+
+    &:hover {
+        background-color: darken(white, 3);
+        cursor: pointer;
+
+        div.ActionFormInfoLabel:after {
+            color: darken(white, 50);
+        }
+    }
+
+    div:first-child {
+        padding: 1em 0;
+    }
+
+    div {
+        position: relative;
+        display: inline-block;
+        width: 50%;
+        float: left;
+
+        &.ActionFormInfoLabel:after {
+            @include icon($fa-var-search-plus);
+            margin-left: 0.5em;
+            color: darken(white, 20);
+        }
+
+        &.ResponseWidget {
+            margin-bottom: 0;
+        }
+
+        .ResponseWidget-button {
+            position: absolute;
+            right: 0;
+        }
+    }
+}

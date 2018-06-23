@@ -1,5 +1,8 @@
 import React from 'react';
 import { FormattedMessage as Msg } from 'react-intl';
+import cx from 'classnames';
+
+import Button from '../../misc/Button';
 
 
 export default function ResponseWidget(props) {
@@ -13,6 +16,19 @@ export default function ResponseWidget(props) {
     else {
         let action = props.action;
         let id = action.get('id');
+        let button;
+
+        let buttonLabel = props.response?
+            "campaignForm.action.button.undoSignUp" :
+            "campaignForm.action.button.signUp";
+
+        let buttonClasses = cx('ResponseWidget-button', {
+            signedUp: props.response,
+        });
+
+        let onClick = props.response?
+            props.onUndo.bind(this, action) :
+            props.onSignUp.bind(this, action);
 
         // Include meta-data about org and previous (current) state in the
         // form data for when form is submitted without javascript. The
@@ -24,15 +40,11 @@ export default function ResponseWidget(props) {
                     value={ action.get('org_id') }/>
                 <input key="prev" type="hidden" name={ id + '.prev' }
                     value={ props.response? 'on' : 'off' }/>
-                <input key="checkbox" type="checkbox"
-                    className="ResponseWidget-checkbox"
-                    onChange={ props.onChange.bind(this, action) }
-                    checked={ props.response }
-                    id={ id } name={ id + '.res' }/>
-                <label key="label" className="ResponseWidget-checkboxLabel"
-                    htmlFor={ id }>
-                    <Msg id="campaignForm.action.yesLabel"/>
-                </label>
+                <Button key="button"
+                    className={ buttonClasses }
+                    labelMsg={ buttonLabel }
+                    onClick={ onClick }
+                    id={ id } name={ id + '.res' } />
             </div>
         );
     }

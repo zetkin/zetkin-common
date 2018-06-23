@@ -21,44 +21,58 @@
     .CampaignCalendarDay-link {
         position: absolute;
         display: block;
-        @include button-color(darken(white, 10), 2);
-        border: 1px solid darken(white, 20);
         transition: all 0.5s;
         border-radius: 50%;
-        height: 50%;
-        width: 50%;
-        margin: 25%;
+        height: 80%;
+        width: 80%;
+        margin: 9%;
+        text-align: center;
+        line-height: 2.2em;
+        font-size: 70%;
+        text-decoration: none;
+        color: lighten($c-text, 20);
+        letter-spacing: 1px;
+
+        &:before {
+            //For vertical alignment
+            content: "";
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+        }
     }
 
-    &:hover {
+    &.hasActions {
         .CampaignCalendarDay-link {
-            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-            z-index: 999;
-            position: absolute;
-            width: 110%;
-            height: 110%;
-            margin-left: -5%;
-            margin-top: -5%;
-            transition: all 0.2s;
+            text-decoration: underline;
+            color: lighten($c-text, 0);
         }
+
     }
     &.hasResponses {
         .CampaignCalendarDay-link {
-            &:before {
-                content: " ";
-                display: block;
-                width: 50%;
-                height: 50%;
-                background: $c-brand-main;
-                margin: 25%;
-                border-radius: 50%;
+            background-color: darken(white, 1);
+            border: 2px solid $c-brand-main;
+        }
+        &:hover {
+            .CampaignCalendarDay-link {
+                box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+                z-index: 999;
+                position: absolute;
+                width: 110%;
+                height: 110%;
+                margin-left: -5%;
+                margin-top: -5%;
+                transition: all 0.2s;
+                line-height: 3em;
             }
         }
     }
 
     &.hasBookings {
         .CampaignCalendarDay-link {
-            @include button-color($c-brand-main);
+            background-color: $c-brand-main;
+            color: white;
         }
     }
 }

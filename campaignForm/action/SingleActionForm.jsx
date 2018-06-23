@@ -1,14 +1,19 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import cx from 'classnames';
 import ReactDOM from 'react-dom';
 import { FormattedMessage as Msg } from 'react-intl';
 
 import ActionFormTitle from './ActionFormTitle';
-import ActionFormLocation from './ActionFormLocation';
-import ActionFormTime from './ActionFormTime';
+import ActionFormInfoLabel from './ActionFormInfoLabel';
 import ResponseWidget from './ResponseWidget';
+import Button from '../../misc/Button';
 
+const mapStateToProps = state => ({
+    orgList: state.getIn(['orgs', 'orgList', 'items'])
+});
 
+@connect(mapStateToProps)
 export default class SingleActionForm extends React.Component {
     static propTypes = {
         onChange: React.PropTypes.func,
@@ -18,21 +23,6 @@ export default class SingleActionForm extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            viewMode: undefined,
-        };
-    }
-
-    componentDidMount() {
-        let node = ReactDOM.findDOMNode(this.refs.infoText);
-        if (node) {
-            if (node.clientHeight > 42) {
-                this.setState({
-                    viewMode: 'contracted',
-                });
-            }
-        }
     }
 
     render() {
@@ -48,6 +38,12 @@ export default class SingleActionForm extends React.Component {
         let timeLabel = startTime.format('{HH}:{mm}')
             + ' - ' + endTime.format('{HH}:{mm}');
 
+        let orgItem = this.props.orgList.find(org =>
+                org.get('id') == action.get('org_id'));
+        let organization = orgItem.get('title');
+
+        let campaign = action.getIn(['campaign', 'title']);
+
         let location = action.getIn(['location', 'title']);
 
         let infoText = null;
@@ -58,37 +54,43 @@ export default class SingleActionForm extends React.Component {
                     { action.get('info_text') }
                 </p>
             ];
-
-            if (this.state.viewMode) {
-                infoText.push(
-                    <button
-                        key="toggleExpandButton"
-                        className="SingleActionForm-toggleExpandButton"
-                        onClick={ this.onClickToggleExpandButton.bind(this) }>
-                        </button>
-                );
-            }
-
         }
 
-        let classes = cx('SingleActionForm', {
-            contracted: this.state.viewMode === 'contracted',
-            expanded: this.state.viewMode === 'expanded',
-        });
+        let currentNeed;
+        let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
+
+        if (this.props.showNeed && action.get('num_participants_required')
+            > action.get('num_participants_available')) {
+            currentNeed = <ActionFormInfoLabel className="showNeed"
+                    label={ currentNeedLabel }/>;
+        }
 
         return (
-            <div className={ classes }>
-                <ActionFormTitle title={ activity } />
-                <ActionFormLocation location={ location } />
-                <ActionFormTime time={ timeLabel } />
+            <div className="SingleActionForm">
+                <ActionFormTitle title={ activity }
+                    organization={ organization } />
+                { currentNeed }
+                <ActionFormInfoLabel className="campaign"
+                    label={ campaign }/>
+                <ActionFormInfoLabel className="location"
+                    label={ location }/>
+                <ActionFormInfoLabel className="time"
+                    label={ timeLabel }/>
 
                 { infoText }
 
-                <div className="SingleActionForm-response">
+                <div className="SingleActionForm-buttons">
+                    <Button key="info"
+                        className="SingleActionForm-infoButton"
+                        labelMsg="campaignForm.action.infoButton"
+                        onClick={ this.onInfoButtonClick.bind(this, action) }
+                        />
                     <ResponseWidget action={ action }
                         isBooked={ this.props.isBooked }
                         response={ this.props.response }
-                        onChange={ this.onChange.bind(this) }/>
+                        onSignUp={ this.onSignUp.bind(this) }
+                        onUndo={ this.onUndo.bind(this) }
+                        />
                 </div>
             </div>
         );
@@ -102,9 +104,18 @@ export default class SingleActionForm extends React.Component {
         });
     }
 
-    onChange(action, ev) {
-        if (this.props.onChange) {
-            this.props.onChange(action, ev.target.checked);
-        }
+    onSignUp(action, ev) {
+        ev.preventDefault();
+        this.props.onChange(action, true);
+    }
+
+    onUndo(action, ev) {
+        ev.preventDefault();
+        this.props.onChange(action, false);
+    }
+
+    onInfoButtonClick(action, ev) {
+        ev.preventDefault();
+        this.props.onSelect(action);
     }
 };
