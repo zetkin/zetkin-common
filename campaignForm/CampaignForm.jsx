@@ -95,6 +95,7 @@ export default class CampaignForm extends React.Component {
         else if (actionList.get('items') && userActionList.get('items')
             && responseList.get('items')) {
 
+            let numUnderStaffedActions = 0;
             let filteredActions = actionList.get('items');
 
             let actionInfoSection;
@@ -123,11 +124,6 @@ export default class CampaignForm extends React.Component {
                 );
             }
 
-            if (this.state.showNeed && this.props.needFilterEnabled) {
-                filteredActions = filteredActions.filter(action =>
-                    action.get('needs_participants'));
-            }
-
             if (this.state.filterActivities.length) {
                 let activities = this.state.filterActivities;
                 filteredActions = filteredActions.filter(action => activities
@@ -144,6 +140,20 @@ export default class CampaignForm extends React.Component {
                 let locations = this.state.filterLocations;
                 filteredActions = filteredActions.filter(action => locations
                     .indexOf(action.getIn(['location', 'id']).toString()) >= 0);
+            }
+
+            if (this.props.needFilterEnabled) {
+                let underStaffedActions = filteredActions.filter(action => {
+                    const numRequired = action.get('num_participants_required');
+                    const numAvailable = action.get('num_participants_available');
+                    return numRequired > numAvailable;
+                });
+
+                numUnderStaffedActions = underStaffedActions.size;
+
+                if (this.state.showNeed) {
+                    filteredActions = underStaffedActions;
+                }
             }
 
             let actionsByDay = filteredActions.groupBy(action => {
@@ -360,12 +370,6 @@ export default class CampaignForm extends React.Component {
             let filter;
 
             if(this.props.needFilterEnabled) {
-
-                let needParticipants = filteredActions.filter(action =>
-                    action.get('needs_participants'));
-
-                let needParticipantsCount = needParticipants.size;
-
                 if (this.state.showNeed) {
                     message = (
                         <div className="CampaignMessage">
@@ -373,7 +377,7 @@ export default class CampaignForm extends React.Component {
                             <Msg id="campaignForm.message.showNeed.title"
                             /></h2>
                             <Msg tagName="p"
-                                values={{count: needParticipantsCount}}
+                                values={{count: numUnderStaffedActions}}
                                 id="campaignForm.message.showNeed.p"
                             />
                         </div>
@@ -387,7 +391,7 @@ export default class CampaignForm extends React.Component {
                 filter = (
                     <div className="CampaignForm-filter">
                         <div className="CampaignForm-filterShowNeed">
-                            <p><Msg values={{count: needParticipantsCount}}
+                            <p><Msg values={{count: numUnderStaffedActions}}
                                 id="campaignForm.filter.showNeed.p"/></p>
                             <Button
                                 onClick={ this.onShowNeedClick.bind(this) }

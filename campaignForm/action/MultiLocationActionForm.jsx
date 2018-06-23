@@ -51,7 +51,7 @@ export default class MultiLocationActionForm extends React.Component {
             let response = this.props.responses
                 .indexOf(action.get('id').toString()) >= 0;
 
-            if (action.get('needs_participants')) {
+            if (action.get('num_participants_required') > action.get('num_participants_available')) {
                 hasNeed = true;
             }
 
