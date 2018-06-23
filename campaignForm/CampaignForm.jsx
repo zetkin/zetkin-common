@@ -111,6 +111,7 @@ export default class CampaignForm extends React.Component {
 
                 actionInfoSection = (
                     <ActionInfoSection
+                        key={ selectedAction.get('id') }
                         className="CampaignForm-actionInfoSection"
                         action={ selectedAction }
                         onClose={ this.onActionInfoClose.bind(this) }
