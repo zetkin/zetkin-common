@@ -363,7 +363,8 @@ export default class CampaignForm extends React.Component {
             let allActions = actionList.get('items').toList();
 
             let classes = cx('CampaignForm', {
-                    'CampaignForm-scrolled': this.state.scrolled
+                    'showingNeed': this.state.showNeed,
+                    'CampaignForm-scrolled': this.state.scrolled,
                 });
 
             let message = this.props.message;

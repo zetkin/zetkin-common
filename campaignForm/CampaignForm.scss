@@ -66,6 +66,17 @@
     }
 }
 
+// Hide need filter when filtering (on mobile only)
+.CampaignForm.showingNeed {
+    .CampaignForm-filterShowNeed {
+        display: none;
+
+        @include medium-screen {
+            display: block;
+        }
+    }
+}
+
 .CampaignForm-scrolled {
     .CampaignForm-sidebar {
         @include medium-screen {
