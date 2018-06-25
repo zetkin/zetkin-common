@@ -83,7 +83,9 @@ export default class ActionInfoSection extends React.Component {
                         label={ campaign }/>
                     </a>
                     <ActionFormInfoLabel className="location"
-                    label={ location }/>
+                        label={ location }/>
+                    <ActionFormInfoLabel className="date"
+                        label={ startTime.format('{yyyy}-{MM}-{dd}') }/>
                     <ActionFormInfoLabel className="time"
                         label={ timeLabel }/>
 

@@ -24,6 +24,7 @@ export default class MultiShiftActionForm extends React.Component {
 
     render() {
         let actions = this.props.actions;
+        let firstStartTime = null;
 
         let orgItem = this.props.orgList.find(org =>
                 org.get('id') == actions[0].get('org_id'));
@@ -37,6 +38,10 @@ export default class MultiShiftActionForm extends React.Component {
                 { fromUTC: true, setUTC: true });
             let endTime = Date.create(action.get('end_time'),
                 { fromUTC: true, setUTC: true });
+
+            if (!firstStartTime) {
+                firstStartTime = startTime;
+            }
 
             // TODO: Find nice way to localize this
             let timeLabel = startTime.format('{HH}:{mm}')
@@ -83,6 +88,8 @@ export default class MultiShiftActionForm extends React.Component {
                     label={ actions[0].getIn(['campaign', 'title']) }/>
                 <ActionFormInfoLabel className="location"
                         label={ actions[0].getIn(['location', 'title']) }/>
+                <ActionFormInfoLabel className="date"
+                    label={ firstStartTime.format('{yyyy}-{MM}-{dd}') }/>
                 <ul>
                     { shiftItems }
                 </ul>

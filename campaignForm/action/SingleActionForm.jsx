@@ -74,6 +74,8 @@ export default class SingleActionForm extends React.Component {
                     label={ campaign }/>
                 <ActionFormInfoLabel className="location"
                     label={ location }/>
+                <ActionFormInfoLabel className="date"
+                    label={ startTime.format('{yyyy}-{MM}-{dd}') }/>
                 <ActionFormInfoLabel className="time"
                     label={ timeLabel }/>
 

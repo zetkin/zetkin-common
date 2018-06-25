@@ -9,6 +9,9 @@
     &.location:before {
         @include icon($fa-var-map-marker);
     }
+    &.date:before {
+        @include icon($fa-var-calendar);
+    }
     &.time:before {
         @include icon($fa-var-clock-o);
     }

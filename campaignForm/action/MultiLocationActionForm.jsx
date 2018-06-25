@@ -90,6 +90,8 @@ export default class MultiLocationActionForm extends React.Component {
                 { currentNeed }
                 <ActionFormInfoLabel className="campaign"
                     label={ actions[0].getIn(['campaign', 'title']) }/>
+                <ActionFormInfoLabel className="date"
+                    label={ startTime.format('{yyyy}-{MM}-{dd}') }/>
                 <ActionFormInfoLabel className="time"
                     label={ timeLabel }/>
                 { content }
