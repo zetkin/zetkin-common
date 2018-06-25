@@ -14,7 +14,6 @@
         @include col-offset(0, 12);
         position: absolute;
         left: 0;
-        overflow-y: scroll;
     }
 
     @include large-screen {
@@ -86,6 +85,7 @@
             bottom: 0;
             left: 0;
             right: 0;
+            overflow-y: auto;
         }
     }
 }
@@ -199,12 +199,12 @@
     height: 100vh;
 
     @include medium-screen {
-        @include col(7,12);
+        @include col(7,12, $last:true);
         left: auto;
     }
 
     @include large-screen {
-        @include col(4.5,12);
+        @include col(4.5,12, $last:true);
         @include col-offset(7.5, 12);
     }
 }
