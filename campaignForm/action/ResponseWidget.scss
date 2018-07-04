@@ -6,6 +6,7 @@
     .ResponseWidget-button {
         @include button();
         padding: 0 1.2em;
+        text-align: center;
 
         &:focus {
             outline: none;
