@@ -69,6 +69,16 @@ export default class MultiShiftActionForm extends React.Component {
             );
         });
 
+        let infoText = null;
+        if (actions[0].get('info_text')) {
+            infoText = [
+                <p key="infoText" ref="infoText"
+                    className="MultiShiftActionForm-info">
+                    { actions[0].get('info_text') }
+                </p>
+            ];
+        }
+
         let currentNeed;
         let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
 
@@ -90,6 +100,9 @@ export default class MultiShiftActionForm extends React.Component {
                         label={ actions[0].getIn(['location', 'title']) }/>
                 <ActionFormInfoLabel className="date"
                     label={ firstStartTime.format('{yyyy}-{MM}-{dd}') }/>
+
+                { infoText }
+
                 <ul>
                     { shiftItems }
                 </ul>

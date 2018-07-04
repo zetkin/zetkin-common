@@ -1,18 +1,4 @@
-.MultiLocationActionForm {
-
-    .MultiLocationActionForm-locationsLink {
-        text-decoration: underline;
-        cursor: pointer;
-        padding: 0.25em 0;
-
-        &:before {
-            @include icon($fa-var-map-marker);
-            color: lighten($c-text, 20);
-        }
-    }
-}
-
-.MultiLocationActionForm-info {
+.MultiShiftActionForm-info {
     position: relative;
     color: lighten($c-text, 30);
     font-size: 0.9em;
