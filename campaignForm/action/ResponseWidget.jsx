@@ -30,17 +30,18 @@ export default function ResponseWidget(props) {
             props.onUndo.bind(this, action) :
             props.onSignUp.bind(this, action);
 
+        const href = '?actionSignup='
+            + action.get('org_id')
+            + '/' + id
+            + '/' + (props.response? 'undo' : 'signup');
+
         // Include meta-data about org and previous (current) state in the
         // form data for when form is submitted without javascript. The
         // POST handler uses id.org, id.prev and id.response to figure out
         // the correct API requests.
         return (
             <div className="ResponseWidget">
-                <input key="org" type="hidden" name={ id + '.org' }
-                    value={ action.get('org_id') }/>
-                <input key="prev" type="hidden" name={ id + '.prev' }
-                    value={ props.response? 'on' : 'off' }/>
-                <Button key="button"
+                <Button key="button" href={ href }
                     className={ buttonClasses }
                     labelMsg={ buttonLabel }
                     onClick={ onClick }
