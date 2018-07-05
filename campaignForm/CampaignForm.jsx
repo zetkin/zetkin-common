@@ -174,74 +174,76 @@ export default class CampaignForm extends React.Component {
                 actions = actions.toList().sortBy(action => action.get('start_time'));
 
                 actions.forEach(action => {
+                    let location = action.getIn(['location', 'id']);
+                    let activity = action.getIn(['activity', 'id']);
+                    let startTime = action.get('start_time');
+                    let endTime = action.get('end_time');
                     let infoText = action.get('info_text');
 
-                    if (!infoText) {
-                        let location = action.getIn(['location', 'id']);
-                        let activity = action.getIn(['activity', 'id']);
-                        let startTime = action.get('start_time');
-                        let endTime = action.get('end_time');
+                    for (let i = 0; i < groups.length; i++) {
+                        let group = groups[i];
 
-                        for (let i = 0; i < groups.length; i++) {
-                            let group = groups[i];
+                        if (group.type === 'single') {
+                            let prev = group.actions[0];
+                            let prevActivity = prev.getIn(['activity', 'id']);
+                            let prevLocation = prev.getIn(['location', 'id']);
+                            let prevStartTime = prev.get('start_time');
+                            let prevEndTime = prev.get('end_time');
 
-                            if (group.type === 'single') {
-                                let prev = group.actions[0];
-                                let prevActivity = prev.getIn(['activity', 'id']);
-                                let prevLocation = prev.getIn(['location', 'id']);
-                                let prevStartTime = prev.get('start_time');
-                                let prevEndTime = prev.get('end_time');
-
-                                if (group.forceSingle || activity != prevActivity) {
-                                    // Must be same activity
-                                    continue;
-                                }
-
-                                if (location == prevLocation && prevEndTime == startTime) {
-                                    group.type = 'shifts';
-                                    group.activity = prevActivity;
-                                    group.location = prevLocation;
-                                    group.startTime = prevStartTime;
-                                    group.endTime = endTime;
-                                    group.actions.push(action);
-                                    return;
-                                }
-                                else if (prevStartTime == startTime
-                                    && prevEndTime == endTime) {
-                                    group.type = 'parallel';
-                                    group.activity = prevActivity;
-                                    group.startTime = startTime;
-                                    group.endTime = endTime;
-                                    group.actions.push(action);
-                                    return;
-                                }
+                            if (group.infoText != infoText) {
+                                // Must be same info text (e.g. none)
+                                continue;
                             }
-                            else if (group.type === 'shifts') {
-                                // If activity and location is the same, and this
-                                // action starts right after the last action in the
-                                // group ends, the action is a shift in this group.
-                                if (group.activity == activity
-                                    && group.location == location
-                                    && group.endTime == startTime) {
 
-                                    // Add action to group and stop looking
-                                    group.endTime = endTime;
-                                    group.actions.push(action);
-                                    return;
-                                }
+                            if (activity != prevActivity) {
+                                // Must be same activity
+                                continue;
                             }
-                            else if (group.type === 'parallel') {
-                                // If activity, startTime and endTime are the same,
-                                // this action is parallel to the actions in this
-                                // group and can be added.
-                                if (group.activity == activity
-                                    && group.startTime == startTime
-                                    && group.endTime == endTime) {
 
-                                    // Add action to group and stop looking
-                                    group.actions.push(action);
-                                    return;
-                                }
+                            if (location == prevLocation && prevEndTime == startTime) {
+                                group.type = 'shifts';
+                                group.activity = prevActivity;
+                                group.location = prevLocation;
+                                group.startTime = prevStartTime;
+                                group.endTime = endTime;
+                                group.actions.push(action);
+                                return;
+                            }
+                            else if (prevStartTime == startTime
+                                && prevEndTime == endTime) {
+                                group.type = 'parallel';
+                                group.activity = prevActivity;
+                                group.startTime = startTime;
+                                group.endTime = endTime;
+                                group.actions.push(action);
+                                return;
+                            }
+                        }
+                        else if (group.type === 'shifts') {
+                            // If activity and location is the same, and this
+                            // action starts right after the last action in the
+                            // group ends, the action is a shift in this group.
+                            if (group.activity == activity
+                                && group.location == location
+                                && group.endTime == startTime) {
+
+                                // Add action to group and stop looking
+                                group.endTime = endTime;
+                                group.actions.push(action);
+                                return;
+                            }
+                        }
+                        else if (group.type === 'parallel') {
+                            // If activity, startTime and endTime are the same,
+                            // this action is parallel to the actions in this
+                            // group and can be added.
+                            if (group.activity == activity
+                                && group.startTime == startTime
+                                && group.endTime == endTime) {
+
+                                // Add action to group and stop looking
+                                group.actions.push(action);
+                                return;
                             }
                         }
                     }
@@ -249,7 +251,7 @@ export default class CampaignForm extends React.Component {
                     // No group was found, create new single
                     groups.push({
                         type: 'single',
-                        forceSingle: !!action.get('info_text'),
+                        infoText: action.get('info_text'),
                         actions: [ action ],
                     });
                 });

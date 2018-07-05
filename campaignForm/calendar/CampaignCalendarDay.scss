@@ -9,13 +9,9 @@
     border-right: 1px solid darken(white, 5);
     position: relative;
 
-    &.CampaignCalendarDay-month0,
-    &.CampaignCalendarDay-month2,
-    &.CampaignCalendarDay-month4,
-    &.CampaignCalendarDay-month6,
-    &.CampaignCalendarDay-month8,
-    &.CampaignCalendarDay-month10 {
-        background-color: darken(white, 3);
+    background-color: darken(white, 3);
+    &.isSelectedMonth {
+        background-color: white;
     }
 
     .CampaignCalendarDay-link {

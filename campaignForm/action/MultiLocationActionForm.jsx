@@ -74,6 +74,16 @@ export default class MultiLocationActionForm extends React.Component {
             </ul>
         );
 
+        let infoText = null;
+        if (actions[0].get('info_text')) {
+            infoText = [
+                <p key="infoText" ref="infoText"
+                    className="MultiLocationActionForm-info">
+                    { actions[0].get('info_text') }
+                </p>
+            ];
+        }
+
         let currentNeed;
         let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
 
@@ -94,6 +104,9 @@ export default class MultiLocationActionForm extends React.Component {
                     label={ startTime.format('{yyyy}-{MM}-{dd}') }/>
                 <ActionFormInfoLabel className="time"
                     label={ timeLabel }/>
+
+                { infoText }
+
                 { content }
             </div>
         );

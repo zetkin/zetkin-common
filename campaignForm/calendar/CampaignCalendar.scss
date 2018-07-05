@@ -7,6 +7,45 @@
         clear: both;
     }
 }
+.CampaignCalendar-nav {
+    display: flex;
+    margin: 0 0 0.8em;
+
+    .CampaignCalendar-navPrev {
+        a:before {
+            @include icon($fa-var-chevron-left);
+        }
+    }
+
+    .CampaignCalendar-navCurrent {
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    .CampaignCalendar-navNext {
+        text-align: right;
+        a:before {
+            @include icon($fa-var-chevron-right);
+        }
+    }
+
+    .CampaignCalendar-navPrev,
+    .CampaignCalendar-navNext {
+        width: 3em;
+        padding: 0 0.5em;
+
+        a {
+            cursor: pointer;
+            display: block;
+            color: lighten($c-text, 20);
+
+            &:hover {
+                color: $c-brand-main;
+            }
+        }
+    }
+}
+
 .CampaignCalendar-header {
     ul {
         list-style: none;
@@ -17,5 +56,7 @@
         display: inline-block;
         width: 14%;
         text-align: center;
+        font-size: 0.8em;
+        color: lighten($c-text, 30);
     }
 }

@@ -7,6 +7,26 @@ import CampaignCalendarWeek from './CampaignCalendarWeek';
 import CampaignCalendarDay from './CampaignCalendarDay';
 
 
+const stateFromProps = props => {
+    const firstAction = props.actions
+        .sort((a0, a1) => {
+            let d0 = new Date(a0.get('start_time')),
+                d1 = new Date(a1.get('start_time'));
+
+            return d0.getTime() - d1.getTime();
+        })
+        .get(0);
+
+    let firstDate = new Date();
+    if (firstAction) {
+        firstDate = new Date(firstAction.get('start_time'));
+    }
+
+    return {
+        viewStartDate: new Date(firstDate.getFullYear(), firstDate.getMonth()),
+    };
+};
+
 export default class CampaignCalendar extends React.Component {
     static propTypes = {
         actions: PropTypes.list.isRequired,
@@ -17,30 +37,42 @@ export default class CampaignCalendar extends React.Component {
         onSelectDay: PropTypes.func.isRequired,
     };
 
-    render() {
-        let startDate = this.props.startDate;
-        let endDate = this.props.endDate;
-        let bookings = this.props.bookings;
-        let responses = this.props.responses;
-        let actions = this.props.actions.sort((a0, a1) => {
-            let d0 = new Date(a0.get('start_time')),
-                d1 = new Date(a1.get('start_time'));
+    constructor(props) {
+        super(props);
 
-            return d0.getTime() - d1.getTime();
+        this.state = stateFromProps(props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const curMonth = this.state.viewStartDate.getMonth();
+        const curYear = this.state.viewStartDate.getFullYear();
+
+        // If there are any actions during this month, leave state alone
+        const numActionsInMonth = nextProps.actions
+            .filter(a => {
+                const d = new Date(a.get('start_time'));
+                return (d.getFullYear() == curYear && d.getMonth() == curMonth);
+            })
+            .size;
+
+        // TODO: Avoid having to do this by memoizing in CampaignForm
+        let actionsChanged = false;
+        nextProps.actions.forEach((a, idx) => {
+            if (this.props.actions.get(idx) != a) {
+                actionsChanged = true;
+            }
         });
 
-        if (!startDate && actions.size > 0) {
-            startDate = new Date(actions.first().get('start_time'));
+        if (actionsChanged && numActionsInMonth == 0) {
+            this.setState(stateFromProps(nextProps));
         }
+    }
 
-        if (!endDate && actions.size > 0) {
-            endDate = new Date(actions.last().get('end_time'));
-        }
-
-        if (!startDate || !endDate) {
-            // Don't render calendar if there are no actions
-            return null;
-        }
+    render() {
+        let startDate = new Date(this.state.viewStartDate);
+        let endDate = new Date(startDate).advance({ months: 1 }).rewind({ days: 1 });
+        let bookings = this.props.bookings;
+        let responses = this.props.responses;
 
         // Always start on previous Monday
         let startDay = startDate.getDay();
@@ -51,11 +83,19 @@ export default class CampaignCalendar extends React.Component {
             endDate.setDate(endDate.getDate() + (7 - endDate.getDay()));
         }
 
-        // Don't show calendar when actions span less than seven days
-        let duration = endDate.getTime() - startDate.getTime();
-        if (duration < (7 * 24 * 60 * 60 * 1000)) {
-            return null;
-        }
+        // Ignore actions that are outside the currently rendered span of
+        // dates, and force order them by date which is required to render.
+        let actions = this.props.actions
+            .filter(a => {
+                let d = new Date(a.get('start_time'));
+                return d >= startDate;
+            })
+            .sort((a0, a1) => {
+                let d0 = new Date(a0.get('start_time')),
+                    d1 = new Date(a1.get('start_time'));
+
+                return d0.getTime() - d1.getTime();
+            });
 
         let d = new Date(startDate.toDateString());
         let weeks = [];
@@ -91,6 +131,7 @@ export default class CampaignCalendar extends React.Component {
 
             days.push(
                 <CampaignCalendarDay key={ d } date={ new Date(d) }
+                    isSelectedMonth={ d.getMonth() == this.state.viewStartDate.getMonth() }
                     numActions={ numDayActions }
                     hasBookings={ hasBookings }
                     hasResponses={ hasResponses }
@@ -116,6 +157,18 @@ export default class CampaignCalendar extends React.Component {
 
         return (
             <div className={ classes }>
+                <div className="CampaignCalendar-nav">
+                    <div className="CampaignCalendar-navPrev">
+                        <a onClick={ this.onPrevMonthClick.bind(this) }/>
+                    </div>
+                    <div className="CampaignCalendar-navCurrent">
+                        { this.state.viewStartDate.format('{Month} {yyyy}') }
+                    </div>
+                    <div className="CampaignCalendar-navNext">
+                        <a onClick={ this.onNextMonthClick.bind(this) }
+                            />
+                    </div>
+                </div>
                 <div className="CampaignCalendar-header">
                     <ul>
                         <Msg tagName="li" id="campaignForm.calendar.weekDays.monday"/>
@@ -130,6 +183,24 @@ export default class CampaignCalendar extends React.Component {
                 { weeks }
             </div>
         );
+    }
+
+    onPrevMonthClick() {
+        this.setState({
+            viewStartDate: new Date(
+                this.state.viewStartDate.getFullYear(),
+                this.state.viewStartDate.getMonth() - 1
+            )
+        });
+    }
+
+    onNextMonthClick() {
+        this.setState({
+            viewStartDate: new Date(
+                this.state.viewStartDate.getFullYear(),
+                this.state.viewStartDate.getMonth() + 1
+            )
+        });
     }
 
     onDayClick(fragment) {

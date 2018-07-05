@@ -12,8 +12,8 @@ export default class CampaignCalendarDay extends React.Component {
     render() {
         let date = this.props.date;
         let classes = cx(
-            'CampaignCalendarDay',
-            'CampaignCalendarDay-month' + date.getMonth(), {
+            'CampaignCalendarDay', {
+                'isSelectedMonth': this.props.isSelectedMonth,
                 'hasActions': this.props.numActions > 0,
                 'hasBookings': this.props.hasBookings,
                 'hasResponses': this.props.hasResponses,
