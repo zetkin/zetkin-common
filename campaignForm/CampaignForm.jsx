@@ -17,6 +17,9 @@ import cx from 'classnames';
 @injectIntl
 export default class CampaignForm extends React.Component {
     static propTypes = {
+        forceNeeded: PropTypes.bool,
+        calcOffset: PropTypes.func,
+        needFilterEnabled: PropTypes.func,
         redirPath: PropTypes.string,
         actionList: PropTypes.complexList.isRequired,
         userActionList: PropTypes.complexList.isRequired,
@@ -40,7 +43,7 @@ export default class CampaignForm extends React.Component {
             viewInfo: null,
             infoSection: null,
             showNeed: false,
-            showedNeed: false,
+            showedNeed: false || props.forceNeeded,
         };
     }
 
@@ -76,7 +79,6 @@ export default class CampaignForm extends React.Component {
 
     render() {
         const { actionList, orgList, responseList, userActionList } = this.props
-        let listComponent = null;
 
         let isPending = actionList.get('isPending')
             || userActionList.get('isPending')
@@ -368,6 +370,7 @@ export default class CampaignForm extends React.Component {
             let classes = cx('CampaignForm', {
                     'showingNeed': this.state.showNeed,
                     'CampaignForm-scrolled': this.state.scrolled,
+                    'CampaignForm-infoOpen': this.state.selectedActionId,
                 });
 
             let message = this.props.message;
@@ -449,15 +452,18 @@ export default class CampaignForm extends React.Component {
     }
 
     onCalendarSelectDay(fragment) {
-        let offset = parseInt(this.props.scrollOffset) || 0;
-        let container = this.props.scrollContainer;
-
-        let target = document.getElementById(fragment);
-        let rect = target.getBoundingClientRect();
+        const animatedScrollTo = require('animated-scrollto');
+        const container = this.props.scrollContainer;
+        const target = document.getElementById(fragment);
+        const rect = target.getBoundingClientRect();
+        const offset = parseInt(this.props.scrollOffset) || 0;
         let scrollTop = rect.top + offset + window.scrollY;
 
-        let animatedScrollTo = require('animated-scrollto');
-        let duration = 200 + scrollTop / 15;
+        if (this.props.calcOffset) {
+            scrollTop = this.props.calcOffset(target, container);
+        }
+
+        const duration = 200 + Math.abs(scrollTop) / 15;
 
         if (container) {
             animatedScrollTo(container, scrollTop, duration);
