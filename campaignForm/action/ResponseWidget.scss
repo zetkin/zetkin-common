@@ -5,7 +5,8 @@
 
     .ResponseWidget-button {
         @include button();
-        padding: 0 1.2em;
+        padding-left: 1.2em;
+        padding-right: 1.2em;
         text-align: center;
 
         &:focus {
@@ -14,7 +15,8 @@
 
         &.signedUp {
             @include button($color: $c-ui-dark);
-            padding: 0 1.2em;
+            padding-left: 1.2em;
+            padding-right: 1.2em;
         }
     }
 
