@@ -26,9 +26,12 @@ export default function ResponseWidget(props) {
             signedUp: props.response,
         });
 
-        let onClick = props.response?
-            props.onUndo.bind(this, action) :
-            props.onSignUp.bind(this, action);
+        let onClick = ev => {
+            ev.preventDefault();
+            props.response?
+                props.onUndo(action) :
+                props.onSignUp(action);
+        }
 
         const href = '?actionSignup='
             + action.get('org_id')

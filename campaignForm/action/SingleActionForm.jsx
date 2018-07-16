@@ -93,21 +93,13 @@ export default class SingleActionForm extends React.Component {
         );
     }
 
-    onClickToggleExpandButton(ev) {
-        ev.preventDefault();
-        this.setState({
-            viewMode: (this.state.viewMode === 'contracted')?
-                'expanded' : 'contracted',
-        });
-    }
-
-    onSignUp(action, ev) {
-        ev.preventDefault();
+    onSignUp() {
+        let action = this.props.action;
         this.props.onChange(action, true);
     }
-
-    onUndo(action, ev) {
-        ev.preventDefault();
+    
+    onUndo() {
+        let action = this.props.action;
         this.props.onChange(action, false);
     }
 

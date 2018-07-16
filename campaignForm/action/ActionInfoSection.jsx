@@ -109,14 +109,4 @@ export default class ActionInfoSection extends React.Component {
             </div>
         );
     }
-
-    onSignUp(action, ev) {
-        ev.preventDefault();
-        this.props.onChange(action, true);
-    }
-
-    onUndo(action, ev) {
-        ev.preventDefault();
-        this.props.onChange(action, false);
-    }
 };
