@@ -117,12 +117,12 @@
         top: 4em;
         @include button($color: $c-ui-dark, $icon: $fa-var-times);
         border-radius: 3em 0 0 3em;
-        padding: 0 0.5em 0 1em;
+        padding: 0 0.5em 0 1em !important;
 
         &:before {
             font-size: 2em;
             line-height: 1.6;
-            height: 1.6;
+            height: 1.6em;
         }
     }
 }

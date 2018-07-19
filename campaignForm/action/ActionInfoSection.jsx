@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import cx from 'classnames';
 import { FormattedMessage as Msg } from 'react-intl';
 
@@ -9,15 +8,11 @@ import ActionFormInfoLabel from './ActionFormInfoLabel';
 import ResponseWidget from './ResponseWidget';
 import ActionMap from './ActionMap';
 
-const mapStateToProps = state => ({
-    orgList: state.getIn(['orgs', 'orgList', 'items'])
-});
-
-@connect(mapStateToProps)
 export default class ActionInfoSection extends React.Component {
     static propTypes = {
         action: PropTypes.object.isRequired,
         onClose: PropTypes.func,
+        orgList: PropTypes.map.isRequired
     };
 
     constructor(props) {
@@ -63,7 +58,8 @@ export default class ActionInfoSection extends React.Component {
         let currentNeed;
         let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
 
-        if (this.props.showNeed && action.get('needs_participants')) {
+        if (this.props.showNeed && action.get('num_participants_required')
+            > action.get('num_participants_available')) {
             currentNeed = <ActionFormInfoLabel className="showNeed"
                     label={ currentNeedLabel }/>;
         }
@@ -113,15 +109,5 @@ export default class ActionInfoSection extends React.Component {
                     />
             </div>
         );
-    }
-
-    onSignUp(action, ev) {
-        ev.preventDefault();
-        this.props.onChange(action, true);
-    }
-
-    onUndo(action, ev) {
-        ev.preventDefault();
-        this.props.onChange(action, false);
     }
 };

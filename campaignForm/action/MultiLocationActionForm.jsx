@@ -1,25 +1,17 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import cx from 'classnames';
 import { FormattedMessage as Msg } from 'react-intl';
 
-import Link from '../../misc/FormattedLink';
 import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
 import ActionFormInfoLabel from './ActionFormInfoLabel';
 import MultiActionFormItem from './MultiActionFormItem';
-import ResponseWidget from './ResponseWidget';
 
-const mapStateToProps = state => ({
-    orgList: state.getIn(['orgs', 'orgList', 'items'])
-});
-
-@connect(mapStateToProps)
 export default class MultiLocationActionForm extends React.Component {
     static propTypes = {
         actions: PropTypes.array.isRequired,
         bookings: PropTypes.array.isRequired,
         responses: PropTypes.array.isRequired,
+        orgList: PropTypes.map.isRequired
     };
 
     render() {

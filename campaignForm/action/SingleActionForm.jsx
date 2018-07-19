@@ -1,24 +1,18 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import cx from 'classnames';
-import ReactDOM from 'react-dom';
 import { FormattedMessage as Msg } from 'react-intl';
 
+import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
 import ActionFormInfoLabel from './ActionFormInfoLabel';
 import ResponseWidget from './ResponseWidget';
 import Button from '../../misc/Button';
 
-const mapStateToProps = state => ({
-    orgList: state.getIn(['orgs', 'orgList', 'items'])
-});
-
-@connect(mapStateToProps)
 export default class SingleActionForm extends React.Component {
     static propTypes = {
         onChange: React.PropTypes.func,
         isBooked: React.PropTypes.bool,
         response: React.PropTypes.bool,
+        orgList: PropTypes.map.isRequired
     };
 
     constructor(props) {
@@ -26,6 +20,7 @@ export default class SingleActionForm extends React.Component {
     }
 
     render() {
+        const { orgList } = this.props;
         let action = this.props.action;
         let activity = action.getIn(['activity', 'title']);
 
@@ -38,8 +33,8 @@ export default class SingleActionForm extends React.Component {
         let timeLabel = startTime.format('{HH}:{mm}')
             + ' - ' + endTime.format('{HH}:{mm}');
 
-        let orgItem = this.props.orgList.find(org =>
-                org.get('id') == action.get('org_id'));
+
+        let orgItem = orgList.get(action.get('org_id'));
         let organization = orgItem.get('title');
 
         let campaign = action.getIn(['campaign', 'title']);
@@ -98,21 +93,13 @@ export default class SingleActionForm extends React.Component {
         );
     }
 
-    onClickToggleExpandButton(ev) {
-        ev.preventDefault();
-        this.setState({
-            viewMode: (this.state.viewMode === 'contracted')?
-                'expanded' : 'contracted',
-        });
-    }
-
-    onSignUp(action, ev) {
-        ev.preventDefault();
+    onSignUp() {
+        let action = this.props.action;
         this.props.onChange(action, true);
     }
-
-    onUndo(action, ev) {
-        ev.preventDefault();
+    
+    onUndo() {
+        let action = this.props.action;
         this.props.onChange(action, false);
     }
 

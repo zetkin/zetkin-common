@@ -1,4 +1,3 @@
-import immutable from 'immutable';
 import { FormattedDate, injectIntl, FormattedMessage as Msg }
     from 'react-intl';
 import React from 'react';
@@ -6,7 +5,6 @@ import ReactDOM from 'react-dom';
 
 import ActionInfoSection from './action/ActionInfoSection';
 import CampaignCalendar from './calendar/CampaignCalendar';
-import CampaignFilter from './filter/CampaignFilter';
 import SingleActionForm from './action/SingleActionForm';
 import MultiShiftActionForm from './action/MultiShiftActionForm';
 import MultiLocationActionForm from './action/MultiLocationActionForm';
@@ -19,11 +17,14 @@ import cx from 'classnames';
 @injectIntl
 export default class CampaignForm extends React.Component {
     static propTypes = {
+        forceNeeded: PropTypes.bool,
+        needFilterEnabled: PropTypes.func,
         redirPath: PropTypes.string,
         actionList: PropTypes.complexList.isRequired,
         userActionList: PropTypes.complexList.isRequired,
         responseList: PropTypes.complexList.isRequired,
         onResponse: PropTypes.func,
+        orgList: PropTypes.map.isRequired,
         scrollContainer: PropTypes.any,
     };
 
@@ -41,7 +42,7 @@ export default class CampaignForm extends React.Component {
             viewInfo: null,
             infoSection: null,
             showNeed: false,
-            showedNeed: false,
+            showedNeed: false || props.forceNeeded,
         };
     }
 
@@ -76,10 +77,7 @@ export default class CampaignForm extends React.Component {
     }
 
     render() {
-        let listComponent = null;
-        let responseList = this.props.responseList;
-        let userActionList = this.props.userActionList;
-        let actionList = this.props.actionList;
+        const { actionList, orgList, responseList, userActionList } = this.props
 
         let isPending = actionList.get('isPending')
             || userActionList.get('isPending')
@@ -117,6 +115,7 @@ export default class CampaignForm extends React.Component {
                         onClose={ this.onActionInfoClose.bind(this) }
                         isBooked={ booked }
                         response={ response }
+                        orgList={ orgList }
                         onSignUp={ this.onActionChange.bind(this, selectedAction, true) }
                         onUndo={ this.onActionChange.bind(this, selectedAction, false) }
                         showNeed={ this.state.showNeed
@@ -274,6 +273,7 @@ export default class CampaignForm extends React.Component {
                                     isBooked={ booked } response={ response }
                                     onSelect={ this.onActionSelect.bind(this)}
                                     onChange={ this.onActionChange.bind(this)}
+                                    orgList={ orgList }
                                     showNeed={ this.state.showNeed
                                         || this.state.showedNeed }
                                     />
@@ -308,6 +308,7 @@ export default class CampaignForm extends React.Component {
                                         responses={ responses }
                                         onSelect={ onActionSelect }
                                         onChange={ onActionChange }
+                                        orgList={ orgList }
                                         showNeed={ this.state.showNeed
                                             || this.state.showedNeed }/>
                                 </li>
@@ -322,6 +323,7 @@ export default class CampaignForm extends React.Component {
                                         responses={ responses }
                                         onSelect={ onActionSelect }
                                         onChange={ onActionChange }
+                                        orgList={ orgList }
                                         showNeed={ this.state.showNeed
                                             || this.state.showedNeed }/>
                                 </li>
@@ -367,6 +369,7 @@ export default class CampaignForm extends React.Component {
             let classes = cx('CampaignForm', {
                     'showingNeed': this.state.showNeed,
                     'CampaignForm-scrolled': this.state.scrolled,
+                    'CampaignForm-infoOpen': this.state.selectedActionId,
                 });
 
             let message = this.props.message;
@@ -448,15 +451,15 @@ export default class CampaignForm extends React.Component {
     }
 
     onCalendarSelectDay(fragment) {
-        let offset = parseInt(this.props.scrollOffset) || 0;
-        let container = this.props.scrollContainer;
+        const offset = parseInt(this.props.scrollOffset) || 0;
+        const container = this.props.scrollContainer;
 
-        let target = document.getElementById(fragment);
-        let rect = target.getBoundingClientRect();
-        let scrollTop = rect.top + offset + window.scrollY;
+        const target = document.getElementById(fragment);
+        const rect = target.getBoundingClientRect();
+        const scrollTop = rect.top + offset + window.scrollY;
 
-        let animatedScrollTo = require('animated-scrollto');
-        let duration = 200 + scrollTop / 15;
+        const animatedScrollTo = require('animated-scrollto');
+        const duration = 200 + Math.abs(scrollTop) / 15;
 
         if (container) {
             animatedScrollTo(container, scrollTop, duration);
