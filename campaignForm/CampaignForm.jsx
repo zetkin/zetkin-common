@@ -18,7 +18,6 @@ import cx from 'classnames';
 export default class CampaignForm extends React.Component {
     static propTypes = {
         forceNeeded: PropTypes.bool,
-        calcOffset: PropTypes.func,
         needFilterEnabled: PropTypes.func,
         redirPath: PropTypes.string,
         actionList: PropTypes.complexList.isRequired,
@@ -452,17 +451,14 @@ export default class CampaignForm extends React.Component {
     }
 
     onCalendarSelectDay(fragment) {
-        const animatedScrollTo = require('animated-scrollto');
+        const offset = parseInt(this.props.scrollOffset) || 0;
         const container = this.props.scrollContainer;
+
         const target = document.getElementById(fragment);
         const rect = target.getBoundingClientRect();
-        const offset = parseInt(this.props.scrollOffset) || 0;
-        let scrollTop = rect.top + offset + window.scrollY;
+        const scrollTop = rect.top + offset + window.scrollY;
 
-        if (this.props.calcOffset) {
-            scrollTop = this.props.calcOffset(target, container);
-        }
-
+        const animatedScrollTo = require('animated-scrollto');
         const duration = 200 + Math.abs(scrollTop) / 15;
 
         if (container) {
