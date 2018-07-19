@@ -58,7 +58,8 @@ export default class ActionInfoSection extends React.Component {
         let currentNeed;
         let currentNeedLabel = <Msg id="campaignForm.action.currentNeed" />
 
-        if (this.props.showNeed && action.get('needs_participants')) {
+        if (this.props.showNeed && action.get('num_participants_required')
+            > action.get('num_participants_available')) {
             currentNeed = <ActionFormInfoLabel className="showNeed"
                     label={ currentNeedLabel }/>;
         }
