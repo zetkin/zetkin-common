@@ -6,8 +6,8 @@
 }
 
 .CampaignForm-sidebar {
-    @include col(10,12);
-    @include col-offset(1, 12);
+    @include col(12,12);
+    padding: 0;
 
     @include medium-screen {
         @include col(5,12);
@@ -20,15 +20,19 @@
         @include col(3,12);
         @include col-offset(0, 12);
     }
-}
 
-.CampaignForm-filter {
+    .CampaignCalendar {
+        margin: 2em 1.5em;
 
+        @include medium-screen {
+            margin: 2em 0;
+        }
+    }
 }
 
 .CampaignForm-filter
 .CampaignForm-filterShowNeed {
-    margin: 2em -15%;
+    margin: 2em 0;
     padding: 2em;
     background-color: $c-brand-comp-light;
     color: white;
