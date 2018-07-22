@@ -3,11 +3,11 @@
     width: 100%;
     margin-bottom: 1em;
 
-    .ResponseWidget-button {
+    .Button.ResponseWidget-button {
         @include button();
+        text-align: center;
         padding-left: 1.2em;
         padding-right: 1.2em;
-        text-align: center;
 
         &:focus {
             outline: none;
