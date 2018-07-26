@@ -104,15 +104,13 @@ export default class MultiLocationActionForm extends React.Component {
         );
     }
 
-    onSignUp(action, ev) {
-        ev.stopPropagation();
+    onSignUp(action) {
         if (this.props.onChange) {
             this.props.onChange(action, true);
         }
     }
 
-    onUndo(action, ev) {
-        ev.stopPropagation();
+    onUndo(action) {
         if (this.props.onChange) {
             this.props.onChange(action, false);
         }

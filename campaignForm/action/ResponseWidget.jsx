@@ -27,6 +27,7 @@ export default function ResponseWidget(props) {
         });
 
         let onClick = ev => {
+            ev.stopPropagation();
             ev.preventDefault();
             props.response?
                 props.onUndo(action) :
