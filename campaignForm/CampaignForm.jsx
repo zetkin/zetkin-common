@@ -18,7 +18,7 @@ import cx from 'classnames';
 export default class CampaignForm extends React.Component {
     static propTypes = {
         forceNeeded: PropTypes.bool,
-        needFilterEnabled: PropTypes.func,
+        needFilterEnabled: PropTypes.bool,
         redirPath: PropTypes.string,
         actionList: PropTypes.complexList.isRequired,
         userActionList: PropTypes.complexList.isRequired,
