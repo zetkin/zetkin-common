@@ -1,4 +1,5 @@
 import React from 'react';
+import linkify from 'linkifyjs/html';
 
 import PropTypes from '../../utils/PropTypes';
 
@@ -16,9 +17,12 @@ export default class SurveyTextBlock extends React.Component {
             h = <h2>{ block.get('header') }</h2>;
         }
 
+
         let p = null;
         if (block.get('content')) {
-            p = <p>{ block.get('content') }</p>;
+            let contentWithLinks = linkify(block.get('content'));
+
+            p = <p dangerouslySetInnerHTML={{ __html: contentWithLinks }}/>;
         }
 
         return (
