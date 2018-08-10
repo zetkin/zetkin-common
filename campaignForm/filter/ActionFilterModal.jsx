@@ -45,15 +45,20 @@ export default class ActionFilterModal extends React.Component {
 
         return (
             <div className={ classes }>
+                <Button className="ActionFilterModal-resetBtn"
+                    labelMsg={ clearButtonMsg }
+                    onClick={ this.props.onReset }
+                    />
                 <ul>
                     { optionItems }
                 </ul>
-                <Button labelMsg={ clearButtonMsg }
-                    onClick={ this.props.onReset }
-                    />
-                <Button labelMsg="campaignForm.filter.modal.closeButton"
-                    onClick={ this.props.onClose }
-                    />
+
+                <div className="ActionFilterModal-footer">
+                    <Button className="ActionFilterModal-footerCloseBtn"
+                        labelMsg="campaignForm.filter.modal.closeButton"
+                        onClick={ this.props.onClose }
+                        />
+                </div>
             </div>
         );
     }

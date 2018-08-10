@@ -9,6 +9,37 @@
     z-index: 999;
 
     animation: ActionFilterModal-enter 0.5s;
+
+    @include large-screen {
+        padding: 2em 30%;
+    }
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    .ActionFilterModal-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1em;
+
+        .ActionFilterModal-footerCloseBtn {
+            @include button($icon: $fa-var-check);
+            right: 0;
+        }
+    }
+
+    .ActionFilterModal-resetBtn.Button {
+        @include button($icon: $fa-var-times,
+            $color: white);
+        border: 1px solid #eee;
+    }
 }
 
 @keyframes ActionFilterModal-enter {

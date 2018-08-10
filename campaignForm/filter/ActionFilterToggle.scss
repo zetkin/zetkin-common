@@ -1,5 +1,47 @@
 .ActionFilterToggle {
+    position: relative;
+    margin: 1em 0;
+    padding: 1em;
+    border-bottom: 1px solid #ccc;
+
+    &:before {
+        @include icon($fa-var-check);
+        position: absolute;
+        color: lighten($c-text, 50);
+    }
+
+    span {
+        display: block;
+        margin-left: 30px;
+        line-height: 1em;
+        margin-bottom: 0.5em;
+
+        &:first-child {
+            // text-decoration: underline;
+        }
+        &:last-child {
+            font-size: 0.9em;
+            color: lighten($c-text, 20);
+        }
+    }
+
+    &:hover {
+        cursor: pointer;
+
+        &:before {
+            color: lighten($c-text, 30);
+        }
+    }
+
     &.selected {
-        background-color: green;
+        &:before {
+            color: $c-brand-main;
+        }
+
+        &:after {
+            // @include icon($fa-var-filter);
+            // position: absolute;
+            // right: 0;
+        }
     }
 }
