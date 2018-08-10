@@ -45,6 +45,9 @@ export default class ActionFilterModal extends React.Component {
 
         return (
             <div className={ classes }>
+                <Msg id="campaignForm.filter.modal.title"
+                    tagName="h2"
+                    />
                 <Button className="ActionFilterModal-resetBtn"
                     labelMsg={ clearButtonMsg }
                     onClick={ this.props.onReset }

@@ -4,14 +4,24 @@
     right: 0;
     top: 0;
     bottom: 0;
-    padding: 2em;
+    padding: 1em;
+    padding-top: 2em;
     background-color: white;
     z-index: 999;
+    overflow-y: scroll;
+    overflow-x: hidden;
 
     animation: ActionFilterModal-enter 0.5s;
 
     @include large-screen {
         padding: 2em 30%;
+    }
+
+    h2 {
+        text-align: center;
+        &:before {
+            @include icon($fa-var-filter);
+        }
     }
 
     ul {
@@ -27,10 +37,12 @@
         bottom: 0;
         left: 0;
         right: 0;
-        padding: 1em;
+        padding: 2em;
+        text-align: center;
 
         .ActionFilterModal-footerCloseBtn {
             @include button($icon: $fa-var-check);
+            font-size: 1.2em;
             right: 0;
         }
     }

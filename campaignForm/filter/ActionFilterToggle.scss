@@ -1,13 +1,12 @@
 .ActionFilterToggle {
     position: relative;
-    margin: 1em 0;
     padding: 1em;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #eee;
 
     &:before {
         @include icon($fa-var-check);
         position: absolute;
-        color: lighten($c-text, 50);
+        color: lighten($c-text, 55);
     }
 
     span {
@@ -16,17 +15,30 @@
         line-height: 1em;
         margin-bottom: 0.5em;
 
+        @include small-screen {
+            display:inline-block;
+        }
+
         &:first-child {
-            // text-decoration: underline;
+            @include small-screen {
+                margin-top: 0.3em;
+            }
         }
         &:last-child {
             font-size: 0.9em;
+            margin-bottom: 0;
             color: lighten($c-text, 20);
+
+            @include small-screen {
+                position: absolute;
+                right: 1em;
+            }
         }
     }
 
     &:hover {
         cursor: pointer;
+        background-color: #fbfbfb;
 
         &:before {
             color: lighten($c-text, 30);
@@ -35,13 +47,12 @@
 
     &.selected {
         &:before {
+            @include icon($fa-var-check);
             color: $c-brand-main;
         }
 
-        &:after {
-            // @include icon($fa-var-filter);
-            // position: absolute;
-            // right: 0;
+        span:first-child {
+            text-decoration: underline;
         }
     }
 }
