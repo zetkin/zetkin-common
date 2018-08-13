@@ -4,6 +4,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import ActionInfoSection from './action/ActionInfoSection';
+import ActionFilterSummary from './filter/ActionFilterSummary';
+import ActionFilterModal from './filter/ActionFilterModal';
 import CampaignCalendar from './calendar/CampaignCalendar';
 import SingleActionForm from './action/SingleActionForm';
 import MultiShiftActionForm from './action/MultiShiftActionForm';
@@ -124,24 +126,6 @@ export default class CampaignForm extends React.Component {
                 );
             }
 
-            if (this.state.filterActivities.length) {
-                let activities = this.state.filterActivities;
-                filteredActions = filteredActions.filter(action => activities
-                    .indexOf(action.getIn(['activity', 'id']).toString()) >= 0);
-            }
-
-            if (this.state.filterCampaigns.length) {
-                let campaigns = this.state.filterCampaigns;
-                filteredActions = filteredActions.filter(action => campaigns
-                    .indexOf(action.getIn(['campaign', 'id']).toString()) >= 0);
-            }
-
-            if (this.state.filterLocations.length) {
-                let locations = this.state.filterLocations;
-                filteredActions = filteredActions.filter(action => locations
-                    .indexOf(action.getIn(['location', 'id']).toString()) >= 0);
-            }
-
             if (this.props.needFilterEnabled) {
                 let underStaffedActions = filteredActions.filter(action => {
                     const numRequired = action.get('num_participants_required');
@@ -154,6 +138,54 @@ export default class CampaignForm extends React.Component {
                 if (this.state.showNeed) {
                     filteredActions = underStaffedActions;
                 }
+            }
+
+            let activities = {};
+            let activityFilter = null;
+            if (this.state.browserHasJavascript) {
+                filteredActions.forEach(action => {
+                    const aStr = action.getIn(['activity', 'title']);
+                    const aKey = aStr.toLowerCase();
+
+                    if (!activities[aKey]) {
+                        activities[aKey] = {
+                            title: aStr,
+                            actionCount: 0,
+                        };
+                    }
+
+                    activities[aKey].actionCount++;
+                });
+
+                if (Object.keys(activities).length) {
+                    activityFilter = (
+                        <ActionFilterSummary
+                            selectedValues={ this.state.filterActivities }
+                            msgPrefix="campaignForm.filter.activity"
+                            onOpen={ this.onFilterOpen.bind(this, 'activity') }
+                            onReset={ this.onFilterReset.bind(this, 'filterActivities') }
+                            />
+                    );
+                }
+            }
+
+            if (this.state.filterActivities.length) {
+                filteredActions = filteredActions.filter(action => {
+                    return !!this.state.filterActivities
+                        .find(val => val.toLowerCase() == action.getIn(['activity', 'title']).toLowerCase());
+                });
+            }
+
+            if (this.state.filterCampaigns.length) {
+                let campaigns = this.state.filterCampaigns;
+                filteredActions = filteredActions.filter(action => campaigns
+                    .indexOf(action.getIn(['campaign', 'id']).toString()) >= 0);
+            }
+
+            if (this.state.filterLocations.length) {
+                let locations = this.state.filterLocations;
+                filteredActions = filteredActions.filter(action => locations
+                    .indexOf(action.getIn(['location', 'id']).toString()) >= 0);
             }
 
             let actionsByDay = filteredActions.groupBy(action => {
@@ -374,7 +406,7 @@ export default class CampaignForm extends React.Component {
 
             let message = this.props.message;
 
-            let filter;
+            let needFilter;
 
             if(this.props.needFilterEnabled && numUnderStaffedActions) {
                 if (this.state.showNeed) {
@@ -399,21 +431,36 @@ export default class CampaignForm extends React.Component {
                     "campaignForm.filter.showNeed.button.hide":
                     "campaignForm.filter.showNeed.button.show";
 
-                filter = (
-                    <div className="CampaignForm-filter">
-                        <div className="CampaignForm-filterShowNeed">
-                            <p><Msg values={{count: numUnderStaffedActions}}
-                                id="campaignForm.filter.showNeed.p"/></p>
-                            <Button
-                                onClick={ this.onShowNeedClick.bind(this) }
-                                labelMsg={ showNeedButtonLabel }/>
-                        </div>
+                needFilter = (
+                    <div className="CampaignForm-filterShowNeed">
+                        <p><Msg values={{count: numUnderStaffedActions}}
+                            id="campaignForm.filter.showNeed.p"/></p>
+                        <Button
+                            onClick={ this.onShowNeedClick.bind(this) }
+                            labelMsg={ showNeedButtonLabel }/>
                     </div>
+                );
+            }
+
+            let modal = null;
+            if (this.state.openFilter) {
+                const options = Object.keys(activities).map(k => activities[k]);
+
+                modal = (
+                    <ActionFilterModal className="CampaignForm-activityFilterModal"
+                        options={ options }
+                        selectedValues={ this.state.filterActivities }
+                        msgPrefix="campaignForm.filter.activity"
+                        onClose={ this.onFilterClose.bind(this) }
+                        onChange={ this.onFilterChange.bind(this, 'filterActivities') }
+                        onReset={ this.onFilterReset.bind(this, 'filterActivities') }
+                        />
                 );
             }
 
             return (
                 <div ref="CampaignForm" className={ classes }>
+                    { modal }
                     { message }
                     <div className="CampaignForm-sidebar">
                         <CampaignCalendar
@@ -423,16 +470,11 @@ export default class CampaignForm extends React.Component {
                             responses={ responses }
                             bookings={ bookings }
                             />
-                        { filter }
+                        <div className="CampaignForm-filter">
+                            { needFilter }
+                            { activityFilter }
+                        </div>
                     </div>
-                    {/*<CampaignFilter
-                        className="CampaignForm-filter"
-                        actions={ allActions }
-                        selectedActivities={ this.state.filterActivities }
-                        selectedCampaigns={ this.state.filterCampaigns }
-                        selectedLocations={ this.state.filterLocations }
-                        onChange={ this.onFilterChange.bind(this) }
-                        />*/}
                     <form method="post" action="/forms/actionResponse"
                         className="CampaignForm-form">
                         <ul className="CampaignForm-days">
@@ -459,7 +501,7 @@ export default class CampaignForm extends React.Component {
         const scrollTop = rect.top + offset + window.scrollY;
 
         const animatedScrollTo = require('animated-scrollto');
-        const duration = 200 + Math.abs(scrollTop) / 15;
+        const duration = Math.min(800, 200 + Math.abs(scrollTop) / 20);
 
         if (container) {
             animatedScrollTo(container, scrollTop, duration);
@@ -471,16 +513,29 @@ export default class CampaignForm extends React.Component {
         }
     }
 
-    onFilterChange(type, selected) {
-        if (type == 'activities') {
-            this.setState({ filterActivities: selected });
-        }
-        else if (type == 'campaigns') {
-            this.setState({ filterCampaigns: selected });
-        }
-        else if (type == 'locations') {
-            this.setState({ filterLocations: selected });
-        }
+    onFilterChange(prop, selected) {
+        this.setState({
+            [prop]: selected,
+        });
+    }
+
+    onFilterReset(prop) {
+        this.setState({
+            [prop]: [],
+            openFilter: null,
+        });
+    }
+
+    onFilterOpen(type) {
+        this.setState({
+            openFilter: type,
+        });
+    }
+
+    onFilterClose(type) {
+        this.setState({
+            openFilter: null,
+        });
     }
 
     onActionChange(action, checked) {

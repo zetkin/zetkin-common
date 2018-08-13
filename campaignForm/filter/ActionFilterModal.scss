@@ -1,0 +1,60 @@
+.ActionFilterModal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 1em;
+    padding-top: 2em;
+    background-color: white;
+    z-index: 999;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    animation: ActionFilterModal-enter 0.5s;
+
+    @include large-screen {
+        padding: 2em 30%;
+    }
+
+    h2 {
+        text-align: center;
+        &:before {
+            @include icon($fa-var-filter);
+        }
+    }
+
+    ul {
+        padding: 0 0 6em;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    .ActionFilterModal-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 2em;
+        text-align: center;
+
+        .ActionFilterModal-footerCloseBtn {
+            @include button($icon: $fa-var-check);
+            font-size: 1.2em;
+            right: 0;
+        }
+    }
+
+    .ActionFilterModal-resetBtn.Button {
+        @include button($icon: $fa-var-times,
+            $color: white);
+        border: 1px solid #eee;
+    }
+}
+
+@keyframes ActionFilterModal-enter {
+    0% { opacity: 0 }
+    100% { opacity: 1 }
+}

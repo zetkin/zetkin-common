@@ -1,0 +1,43 @@
+.ActionFilterSummary {
+    padding: 1em 2em;
+    text-align: center;
+
+    @include medium-screen {
+        margin: 2em -0.5em;
+    }
+
+    @include large-screen {
+        font-size: 0.9em;
+        padding: 1em;
+    }
+
+    &:before {
+        @include icon($fa-var-filter);
+        font-size: 1.8em;
+        display: inline-block;
+        width: 20%;
+        margin: 0;
+        vertical-align: middle;
+    }
+
+    &.active:before {
+        color: $c-brand-main;
+    }
+
+    p {
+        display: inline-block;
+        width: 80%;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .Button {
+        @include button();
+        outline: none;
+    }
+
+    &.active .Button {
+        @include button($icon: $fa-var-undo, $color: white);
+        border: 1px solid darken(white, 15);
+    }
+}

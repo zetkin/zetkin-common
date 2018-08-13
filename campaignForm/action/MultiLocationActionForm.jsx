@@ -48,7 +48,7 @@ export default class MultiLocationActionForm extends React.Component {
             }
 
             return (
-                <MultiActionFormItem key={ locLabel }
+                <MultiActionFormItem key={ id }
                     className="MultiLocationActionForm-locationItem"
                     labelClass="location" label={ locLabel }
                     action={ action }
