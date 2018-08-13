@@ -20,8 +20,18 @@ export default class ActionFilterModal extends React.Component {
         onReset: React.PropTypes.func,
     };
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            changed: false,
+            selectedValues: props.selectedValues?
+                props.selectedValues.concat() : [],
+        };
+    }
+
     render() {
-        const { options, selectedValues, msgPrefix } = this.props;
+        const { options, msgPrefix } = this.props;
+        const selectedValues = this.state.selectedValues;
         const classes = cx('ActionFilterModal', this.props.className);
 
         const optionItems = options
@@ -59,7 +69,7 @@ export default class ActionFilterModal extends React.Component {
                 <div className="ActionFilterModal-footer">
                     <Button className="ActionFilterModal-footerCloseBtn"
                         labelMsg="campaignForm.filter.modal.closeButton"
-                        onClick={ this.props.onClose }
+                        onClick={ this.onClose.bind(this) }
                         />
                 </div>
             </div>
@@ -67,16 +77,27 @@ export default class ActionFilterModal extends React.Component {
     }
 
     onOptionToggle(option, selected) {
-        if (this.props.onChange) {
-            // Get rid of selected option (to be added back if selected)
-            let selectedValues = this.props.selectedValues
-                .filter(val => val.toLowerCase() != option.title.toLowerCase());
+        // Get rid of selected option (to be added back if selected)
+        let selectedValues = this.state.selectedValues
+            .filter(val => val.toLowerCase() != option.title.toLowerCase());
 
-            if (selected) {
-                selectedValues.push(option.title);
-            }
+        if (selected) {
+            selectedValues.push(option.title);
+        }
 
-            this.props.onChange(selectedValues);
+        this.setState({
+            selectedValues,
+            changed: true,
+        });
+    }
+
+    onClose() {
+        if (this.state.changed && this.props.onChange) {
+            this.props.onChange(this.state.selectedValues);
+        }
+
+        if (this.props.onClose) {
+            this.props.onClose();
         }
     }
 }
