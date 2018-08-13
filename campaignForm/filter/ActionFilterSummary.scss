@@ -1,5 +1,7 @@
 .ActionFilterSummary {
-    padding: 2em;
+    padding: 1em 2em;
+    text-align: center;
+
     @include medium-screen {
         margin: 2em -0.5em;
     }
@@ -31,7 +33,6 @@
 
     .Button {
         @include button();
-        width: 100%;
         outline: none;
     }
 
