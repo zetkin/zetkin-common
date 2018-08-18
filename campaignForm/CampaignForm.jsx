@@ -21,6 +21,7 @@ export default class CampaignForm extends React.Component {
     static propTypes = {
         forceNeeded: PropTypes.bool,
         needFilterEnabled: PropTypes.bool,
+        activityFilter: PropTypes.bool,
         redirPath: PropTypes.string,
         actionList: PropTypes.complexList.isRequired,
         userActionList: PropTypes.complexList.isRequired,
@@ -157,7 +158,7 @@ export default class CampaignForm extends React.Component {
                     activities[aKey].actionCount++;
                 });
 
-                if (Object.keys(activities).length) {
+                if (this.props.activityFilter !== false && Object.keys(activities).length) {
                     activityFilter = (
                         <ActionFilterSummary
                             selectedValues={ this.state.filterActivities }
