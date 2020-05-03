@@ -30,6 +30,8 @@ export default class MultiLocationActionForm extends React.Component {
                 org.get('id') == actions[0].get('org_id'));
         let organization = orgItem.get('title');
 
+        let title = actions[0].get('title') ? actions[0].get('title') : actions[0].getIn(['activity', 'title']);
+
         let content;
 
         let hasNeed = false;
@@ -87,7 +89,7 @@ export default class MultiLocationActionForm extends React.Component {
         return (
             <div className="MultiLocationActionForm">
                 <ActionFormTitle
-                    title={ actions[0].getIn(['activity', 'title']) }
+                    title={ title }
                     organization={ organization }/>
                 { currentNeed }
                 <ActionFormInfoLabel className="campaign"

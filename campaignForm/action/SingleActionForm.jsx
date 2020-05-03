@@ -22,7 +22,7 @@ export default class SingleActionForm extends React.Component {
     render() {
         const { orgList } = this.props;
         let action = this.props.action;
-        let activity = action.getIn(['activity', 'title']);
+        let title = action.get('title') ? action.get('title') : action.getIn(['activity', 'title']);
 
         let startTime = Date.create(action.get('start_time'),
             { fromUTC: true, setUTC: true });
@@ -62,7 +62,7 @@ export default class SingleActionForm extends React.Component {
 
         return (
             <div className="SingleActionForm">
-                <ActionFormTitle title={ activity }
+                <ActionFormTitle title={ title }
                     organization={ organization } />
                 { currentNeed }
                 <ActionFormInfoLabel className="campaign"
