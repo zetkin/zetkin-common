@@ -24,7 +24,7 @@ export default class ActionInfoSection extends React.Component {
 
         let action = this.props.action;
 
-        let title = action.getIn(['activity', 'title']);
+        let title = action.get('title') ? action.get('title') : action.getIn(['activity', 'title']);
 
         let startTime = Date.create(action.get('start_time'),
             { fromUTC: true, setUTC: true });

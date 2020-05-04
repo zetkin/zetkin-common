@@ -29,6 +29,7 @@ export default class MultiShiftActionForm extends React.Component {
         let orgItem = this.props.orgList.find(org =>
                 org.get('id') == actions[0].get('org_id'));
         let organization = orgItem.get('title');
+        let title = actions[0].get('title') ? actions[0].get('title') : actions[0].getIn(['activity', 'title'])
 
         let hasNeed = false;
 
@@ -90,7 +91,7 @@ export default class MultiShiftActionForm extends React.Component {
         return (
             <div className="MultiShiftActionForm">
                 <ActionFormTitle
-                    title={ actions[0].getIn(['activity', 'title']) }
+                    title={ title }
                     organization={ organization }
                     />
                 { currentNeed }
