@@ -208,11 +208,7 @@ export default class CampaignForm extends React.Component {
                 actions.forEach(action => {
                     let location = action.getIn(['location', 'id']);
                     let activity = action.getIn(['activity', 'id']);
-                    let title = action.get('title');
-                    if(title == '') {
-                        // We will regard emptry string and null as equivalent
-                        title = null;
-                    }
+                    let title = action.get('title') || null;
                     let startTime = action.get('start_time');
                     let endTime = action.get('end_time');
                     let infoText = action.get('info_text');
@@ -223,10 +219,7 @@ export default class CampaignForm extends React.Component {
                         if (group.type === 'single') {
                             let prev = group.actions[0];
                             let prevActivity = prev.getIn(['activity', 'id']);
-                            let prevTitle = prev.get('title');
-                            if(prevTitle == '') {
-                                prevTitle = null;
-                            }
+                            let prevTitle = prev.get('title') || null;
                             let prevLocation = prev.getIn(['location', 'id']);
                             let prevStartTime = prev.get('start_time');
                             let prevEndTime = prev.get('end_time');
