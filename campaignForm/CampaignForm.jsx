@@ -208,6 +208,11 @@ export default class CampaignForm extends React.Component {
                 actions.forEach(action => {
                     let location = action.getIn(['location', 'id']);
                     let activity = action.getIn(['activity', 'id']);
+                    let title = action.get('title');
+                    if(title == '') {
+                        // We will regard emptry string and null as equivalent
+                        title = null;
+                    }
                     let startTime = action.get('start_time');
                     let endTime = action.get('end_time');
                     let infoText = action.get('info_text');
@@ -218,6 +223,10 @@ export default class CampaignForm extends React.Component {
                         if (group.type === 'single') {
                             let prev = group.actions[0];
                             let prevActivity = prev.getIn(['activity', 'id']);
+                            let prevTitle = prev.get('title');
+                            if(prevTitle == '') {
+                                prevTitle = null;
+                            }
                             let prevLocation = prev.getIn(['location', 'id']);
                             let prevStartTime = prev.get('start_time');
                             let prevEndTime = prev.get('end_time');
@@ -227,13 +236,15 @@ export default class CampaignForm extends React.Component {
                                 continue;
                             }
 
-                            if (activity != prevActivity) {
-                                // Must be same activity
+                            if (activity != prevActivity
+                                || title != prevTitle) {
+                                // Must be same activity and have the same title
                                 continue;
                             }
 
                             if (location == prevLocation && prevEndTime == startTime) {
                                 group.type = 'shifts';
+                                group.title = prevTitle;
                                 group.activity = prevActivity;
                                 group.location = prevLocation;
                                 group.startTime = prevStartTime;
@@ -244,6 +255,7 @@ export default class CampaignForm extends React.Component {
                             else if (prevStartTime == startTime
                                 && prevEndTime == endTime) {
                                 group.type = 'parallel';
+                                group.title = prevTitle;
                                 group.activity = prevActivity;
                                 group.startTime = startTime;
                                 group.endTime = endTime;
@@ -256,6 +268,7 @@ export default class CampaignForm extends React.Component {
                             // action starts right after the last action in the
                             // group ends, the action is a shift in this group.
                             if (group.activity == activity
+                                && group.title == title
                                 && group.location == location
                                 && group.endTime == startTime) {
 
@@ -270,6 +283,7 @@ export default class CampaignForm extends React.Component {
                             // this action is parallel to the actions in this
                             // group and can be added.
                             if (group.activity == activity
+                                && group.title == title
                                 && group.startTime == startTime
                                 && group.endTime == endTime) {
 
