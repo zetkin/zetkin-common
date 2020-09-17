@@ -30,6 +30,65 @@ const countryCodes = {
     YT: 262, ZA: 27, ZM: 260, ZW: 263,
 };
 
+const getFlag = (countryCode, size) => {
+    let L1 = 127482;
+    let L2 = 127475;
+
+    if(countryCode && countryCode.length == 2) {
+        L1 = countryCode.charCodeAt(0)+127397;
+        L2 = countryCode.charCodeAt(1)+127397;
+    }
+
+    return <span style={{ fontSize: size }} dangerouslySetInnerHTML={{__html: '&#' + L1 + ';&#' + L2 + ';'}} />
+}
+
+class CountrySelect extends React.Component {
+    static propTypes = {
+        country: React.PropTypes.string,
+        pickCountry: React.PropTypes.bool,
+        onBlur: React.PropTypes.func,
+        onCountrySelect: React.PropTypes.func,
+        selectedIndex: React.PropTypes.number,
+    };
+
+    constructor(props) {
+        super(props);
+        this.selectedIndex = 0;
+    }
+
+    render() {
+        const { country, pickCountry, onFocus, onBlur, onCountrySelect } = this.props;
+
+        const countryListDisplay = {
+            display: pickCountry ? 'block' : 'none',
+        }
+
+        this.countryCodeList = ['SE', 'DK', 'NO', 'GB','hr'].concat(Object.keys(countryCodes));
+
+        return (
+            <div tabIndex={0} onFocus={ onFocus } onBlur={ onBlur } className='PhoneInput-countryselect' onKeyPress={ this.onKeyPress }>
+                <div className='PhoneInput-flag-menu'>
+                    { getFlag(country, '1.3em') }<div>&#9660;</div>
+                </div>
+                <div className='PhoneInput-country-list' style={countryListDisplay}>
+                    <ul>
+                        {
+                            this.countryCodeList.map((country, index) => country == 'hr' ? <hr /> :
+                                <li 
+                                    className={ index==this.selectedIndex ? 'PhoneInput-country-selected':null } 
+                                    key={ index } 
+                                    onClick={ () => onCountrySelect(country) }>
+                                        { getFlag(country, '1.2em') }
+                                        { country } +{ countryCodes[country] }
+                                </li>
+                            )
+                        }
+                    </ul>
+                </div>
+            </div>)
+    }
+}
+
 export default class PhoneInput extends React.Component {
     static propTypes = {
         className: React.PropTypes.string,
@@ -43,13 +102,26 @@ export default class PhoneInput extends React.Component {
     constructor(props) {
         super(props);
 
+        const { defaultCountry } = this.props;
+
+        this.reverseCountryCodes = {}
+        Object.keys(countryCodes).forEach(
+            country => this.reverseCountryCodes[ countryCodes[country] ] = country
+        );
+
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
+        this.onCountryFocus = this.onCountryFocus.bind(this);
+        this.onCountryBlur = this.onCountryBlur.bind(this);
+        this.onCountrySelect = this.onCountrySelect.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.onKeyPress = this.onKeyPress.bind(this);
 
         this.state = {
             focused: true,
-            value: props.value || props.defaultValue || '+',
+            country: defaultCountry ? defaultCountry : null,
+            value: props.value || props.defaultValue || this.defaultPhonePrefix() || '+',
+            pickCountry: false,
         };
     }
 
@@ -70,27 +142,40 @@ export default class PhoneInput extends React.Component {
         const {
             focused,
             value: stateValue,
+            country,
+            pickCountry,
         } = this.state;
 
         let value = propValue || stateValue;
-
-        value = this.cleanValue(value);
 
         if (!focused && (value === '+' || value === this.defaultPhonePrefix())) {
             value = '';
         }
 
         return (
-            <input
-                className={className}
-                name={name}
-                type="tel"
-                placeholder={placeholder}
-                value={value}
-                onFocus={this.onFocus}
-                onBlur={this.onBlur}
-                onChange={this.onChange}
-            />
+            <div className="SignUpForm-textBox PhoneInput-wrapper">
+                <CountrySelect 
+                    country={ country }
+                    pickCountry={ pickCountry }
+                    onFocus={ this.onCountryFocus }
+                    onBlur={ this.onCountryBlur }
+                    onCountrySelect={ this.onCountrySelect } />
+                <div className="PhoneInput-input">
+                    <label className="SignUpForm-hiddenLabel" htmlFor="phone">
+                        { placeholder }</label>
+                    <input
+                        ref={ (node) => this.phoneInput=node }
+                        className={className}
+                        name={name}
+                        type="tel"
+                        placeholder={placeholder}
+                        value={value}
+                        onFocus={this.onFocus}
+                        onBlur={this.onBlur}
+                        onChange={this.onChange}
+                    />
+                </div>
+            </div>
         );
     }
 
@@ -99,10 +184,68 @@ export default class PhoneInput extends React.Component {
             focused: true,
         });
     }
+
     onBlur() {
         this.setState({
             focused: false,
         });
+    }
+
+    onCountryFocus() {
+        this.setState({
+            pickCountry: true,
+        });
+    }
+
+    onCountryBlur() {
+        this.setState({
+            pickCountry: false,
+        });
+    }
+
+    onCountrySelect(country) {
+        if(country != 'hr') {
+            const oldCountry = this.state.country;
+            this.setState({
+                country: country,
+                pickCountry: false,
+            });
+            let value = this.phoneInput.value;
+            const oldCountryCode = countryCodes[oldCountry];
+            const newCountryCode = countryCodes[country];
+            if(value.startsWith('+'+oldCountryCode)) {
+                value.replace('+'+oldCountryCodee, '+'+newCountryCode);
+            } else {
+                // We will make a guess and replace the first three characters
+                value = value.substring(3);
+                value = '+' + newCountryCode + value;
+            }
+
+            this.phoneInput.value = value;
+            this.phoneInput.focus();
+        }
+    }
+
+    onKeyPress(event) {
+        switch(event.key) {
+            case 'Enter':
+                this.setState({
+                    country: this.countryCodeList[this.selectedIndex],
+                });
+                break;
+            case '38':
+                // Up
+                if(this.selectedIndex > 0) {
+                    this.selectedIndex--;
+                }
+                break;
+            case '40':
+                // Down
+                if(this.selectedIndex < this.countryCodeList.length-1) {
+                    this.selectedIndex++;
+                }
+                break;
+        }
     }
 
     onChange(event) {
@@ -110,12 +253,24 @@ export default class PhoneInput extends React.Component {
 
         value = this.cleanValue(value);
 
+        /*
         if (value === '+' || value === this.defaultPhonePrefix()) {
             value = '';
+        }*/
+        if (value === '') {
+            value = '+' + countryCodes[this.state.country];
+        }
+
+        let country = null;
+        for(let i = 1; i < 4; i++) {
+            let val = value.slice(1, 1+i)
+            country = this.reverseCountryCodes[val]
+            if(country) break;
         }
 
         this.setState({
             value,
+            country,
         })
 
         // This seems to work, but I am not sure what the official stance is on

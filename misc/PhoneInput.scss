@@ -1,0 +1,54 @@
+.PhoneInput-countryselect {
+    flex: 0 0 1em;
+    font-size: 1.2em;
+    vertical-align: middle;
+
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        li:hover {
+            background-color: $c-ui-bg;
+            cursor: pointer;
+        }
+    }
+}
+
+.PhoneInput-country-selected {
+    background-color: $c-ui-bg;
+}
+
+.PhoneInput-country-list {
+    position: absolute;
+    background-color: white;
+    z-index: 10000;
+    height: 10em;
+    overflow: scroll;
+}
+
+.PhoneInput-flag-menu {
+    padding: 0.1em 0.5em 0.5em 0.1em;
+    :hover {
+        cursor: pointer;
+    }
+    
+    div {
+        font-size: 0.7em;
+        width: 100%;
+        text-align: center;
+        margin-top: -0.6em;
+    }
+}
+
+.PhoneInput-hiddenLabel {
+    flex: 1;
+}
+
+.PhoneInput-input {
+    flex: 1;
+}
+
+.PhoneInput-wrapper {
+    display: flex;
+}
