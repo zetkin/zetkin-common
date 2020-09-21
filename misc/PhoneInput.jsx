@@ -1,4 +1,5 @@
 import React from 'react';
+import { injectIntl } from 'react-intl';
 
 const countryCodes = {
     AD: 376, AE: 971, AF: 93, AL: 355, AM: 374, AO: 244, AR: 54, AT: 43, AU: 61,
@@ -42,6 +43,7 @@ const getFlag = (countryCode, size) => {
     return <span style={{ fontSize: size }} dangerouslySetInnerHTML={{__html: '&#' + L1 + ';&#' + L2 + ';'}} />
 }
 
+@injectIntl
 class CountrySelect extends React.Component {
     static propTypes = {
         country: React.PropTypes.string,
@@ -53,7 +55,23 @@ class CountrySelect extends React.Component {
 
     constructor(props) {
         super(props);
-        this.selectedIndex = 0;
+        this.state = {
+            countryCodeNames: {},
+            countryCodeList: [],
+        }
+    }
+
+    componentDidMount() {
+        let countryCodeNames = {};
+        Object.keys(countryCodes).forEach(code => {
+            countryCodeNames[code] = this.props.intl.formatMessage({id:  'misc.countries.' + code });
+        });
+        this.setState({ countryCodeNames });
+
+        const countryCodeList = ['SE', 'DK', 'NO', 'GB', '<hr>'].concat(
+            Object.keys(countryCodes).sort((a,b) => 
+                countryCodeNames[a] < countryCodeNames[b] ? -1 : 1));
+        this.setState({ countryCodeList });
     }
 
     render() {
@@ -63,8 +81,6 @@ class CountrySelect extends React.Component {
             display: pickCountry ? 'block' : 'none',
         }
 
-        this.countryCodeList = ['SE', 'DK', 'NO', 'GB','hr'].concat(Object.keys(countryCodes));
-
         return (
             <div tabIndex={0} onFocus={ onFocus } onBlur={ onBlur } className='PhoneInput-countryselect' onKeyPress={ this.onKeyPress }>
                 <div className='PhoneInput-flag-menu'>
@@ -73,13 +89,13 @@ class CountrySelect extends React.Component {
                 <div className='PhoneInput-country-list' style={countryListDisplay}>
                     <ul>
                         {
-                            this.countryCodeList.map((country, index) => country == 'hr' ? <hr /> :
+                            this.state.countryCodeList.map((country, index) => country == '<hr>' ? <hr /> :
                                 <li 
-                                    className={ index==this.selectedIndex ? 'PhoneInput-country-selected':null } 
+                                    className={ index==this.state.selectedIndex ? 'PhoneInput-country-selected':null } 
                                     key={ index } 
                                     onClick={ () => onCountrySelect(country) }>
                                         { getFlag(country, '1.2em') }
-                                        { country } +{ countryCodes[country] }
+                                        { this.state.countryCodeNames[country] } +{ countryCodes[country] }
                                 </li>
                             )
                         }
@@ -148,10 +164,6 @@ export default class PhoneInput extends React.Component {
 
         let value = propValue || stateValue;
 
-        if (!focused && (value === '+' || value === this.defaultPhonePrefix())) {
-            value = '';
-        }
-
         return (
             <div className="SignUpForm-textBox PhoneInput-wrapper">
                 <CountrySelect 
@@ -204,45 +216,48 @@ export default class PhoneInput extends React.Component {
     }
 
     onCountrySelect(country) {
-        if(country != 'hr') {
+        if(country != '<hr>') {
             const oldCountry = this.state.country;
             this.setState({
                 country: country,
                 pickCountry: false,
             });
-            let value = this.phoneInput.value;
+            let value = this.state.value;
             const oldCountryCode = countryCodes[oldCountry];
             const newCountryCode = countryCodes[country];
-            if(value.startsWith('+'+oldCountryCode)) {
-                value.replace('+'+oldCountryCodee, '+'+newCountryCode);
+            if(value.startsWith('+' + oldCountryCode)) {
+                value = value.replace('+' + oldCountryCode, '+' + newCountryCode);
             } else {
                 // We will make a guess and replace the first three characters
                 value = value.substring(3);
                 value = '+' + newCountryCode + value;
             }
 
-            this.phoneInput.value = value;
+            this.setState({ value });
             this.phoneInput.focus();
         }
     }
 
     onKeyPress(event) {
+        const { selectedIndex } = this.state;
         switch(event.key) {
             case 'Enter':
-                this.setState({
-                    country: this.countryCodeList[this.selectedIndex],
-                });
+                this.onCountrySelect(countryCodes[selectedIndex])
                 break;
             case '38':
                 // Up
-                if(this.selectedIndex > 0) {
-                    this.selectedIndex--;
+                if(selectedIndex > 0) {
+                    this.setState({
+                        selectedIndex: selectedIndex-1,
+                    });
                 }
                 break;
             case '40':
                 // Down
-                if(this.selectedIndex < this.countryCodeList.length-1) {
-                    this.selectedIndex++;
+                if(this.state.selectedIndex < this.state.countryCodeList.length-1) {
+                    this.setState({
+                        selectedIndex: selectedIndex+1
+                    });
                 }
                 break;
         }
