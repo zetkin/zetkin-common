@@ -1,5 +1,6 @@
 import React from 'react';
 import { injectIntl } from 'react-intl';
+import { AsYouType } from 'libphonenumber-js/min';
 
 const countryCodes = {
     AD: 376, AE: 971, AF: 93, AL: 355, AM: 374, AO: 244, AR: 54, AT: 43, AU: 61,
@@ -241,7 +242,7 @@ export default class PhoneInput extends React.Component {
         this.setSelectedIndex = this.setSelectedIndex.bind(this);
 
         this.state = {
-            focused: true,
+            focused: false,
             country: defaultCountry ? defaultCountry : null,
             pickCountry: false,
             selectedIndex: -1,
@@ -270,6 +271,7 @@ export default class PhoneInput extends React.Component {
             country,
             pickCountry,
             selectedIndex,
+            valid,
         } = this.state;
 
         let value = propValue || stateValue;
@@ -290,7 +292,7 @@ export default class PhoneInput extends React.Component {
                         { placeholder }</label>
                     <input
                         ref={ (node) => this.phoneInput=node }
-                        className={className}
+                        className={ `${className} ${ focused && !valid ? "PhoneInput-error" : "" }` }
                         name={name}
                         type="tel"
                         placeholder={placeholder}
@@ -305,14 +307,11 @@ export default class PhoneInput extends React.Component {
     }
 
     onFocus() {
-        this.setState({
-            focused: true,
-        });
     }
 
     onBlur() {
         this.setState({
-            focused: false,
+            focused: true,
         });
     }
 
@@ -359,27 +358,44 @@ export default class PhoneInput extends React.Component {
 
     onChange(event) {
         let value = event.target.value;
+
+        // Country-dependent auto-formatting
+
         value = this.cleanValue(value);
+
+        const c = this.state.country ? 
+            this.state.country : this.props.defaultCountry;
 
         if (value === '') {
             value = '+' + countryCodes[this.state.country];
         } else if (value.match(/^\+?0/)) {
-            const c = this.state.country ? 
-                this.state.country : this.props.defaultCountry;
-            value = '+' + countryCodes[c];
-            value.replace(/^\+?0/, '+' + c);
+            if(c) {
+                value = value.replace(/^\+?0/, `+${countryCodes[c]}`);
+            }
         }
 
+        const formatter = new AsYouType(this.state.country);
+        // formatter.input also returns a formatted version of the phone number entered.
+        // The problem is that the cursor is reset to the end of the input field whenever
+        // a change is made, and correcting this is too complex at this time.
+        formatter.input(value);
+        const valid = formatter.isValid();
         let country = null;
         for (let i = 1; i < 4; i++) {
-            let val = value.slice(1, 1+i)
-            country = this.reverseCountryCodes[val]
+            let val = value.slice(1, 1+i);
+            country = this.reverseCountryCodes[val];
             if(country) break;
+        }
+
+        const pattern = new RegExp("^\\+" + countryCodes[country] + "0+");
+        if (value.match(pattern)) {
+            value = value.replace(pattern, "+" + countryCodes[country])
         }
 
         this.setState({
             value,
             country,
+            valid,
         })
 
         // This seems to work, but I am not sure what the official stance is on

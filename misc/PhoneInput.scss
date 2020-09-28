@@ -95,3 +95,7 @@
 .PhoneInput-wrapper {
     display: flex;
 }
+
+.PhoneInput-error {
+    border-color: $c-brand-main-orange !important;
+}
