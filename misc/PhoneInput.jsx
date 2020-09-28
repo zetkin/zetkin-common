@@ -31,7 +31,7 @@ const countryCodes = {
     YT: 262, ZA: 27, ZM: 260, ZW: 263,
 };
 
-const getFlag = (countryCode, size) => {
+const getFlag = (countryCode) => {
     let L1 = 127482;
     let L2 = 127475;
 
@@ -40,7 +40,7 @@ const getFlag = (countryCode, size) => {
         L2 = countryCode.charCodeAt(1)+127397;
     }
 
-    return <span style={{ fontSize: size }} dangerouslySetInnerHTML={{__html: '&#' + L1 + ';&#' + L2 + ';'}} />
+    return <span dangerouslySetInnerHTML={{__html: '&#' + L1 + ';&#' + L2 + ';'}} />
 }
 
 @injectIntl
@@ -50,7 +50,6 @@ class CountrySelect extends React.Component {
         pickCountry: React.PropTypes.bool,
         onFocus: React.PropTypes.func,
         onBlur: React.PropTypes.func,
-        onKeyDown: React.PropTypes.func,
         onCountrySelect: React.PropTypes.func,
         setSelectedIndex: React.PropTypes.func,
         selectedIndex: React.PropTypes.number,
@@ -92,9 +91,9 @@ class CountrySelect extends React.Component {
         }
 
         return (
-            <div tabIndex={0} onFocus={ onFocus } onBlur={ onBlur } className='PhoneInput-countryselect' onKeyDown={ (e) => this.onKeyDown(e) }>
+            <div tabIndex={-1} onFocus={ onFocus } onBlur={ onBlur } className='PhoneInput-countryselect' onKeyDown={ (e) => this.onKeyDown(e) }>
                 <div className='PhoneInput-flag-menu'>
-                    { getFlag(country, '1.3em') }<div>&#9660;</div>
+                    { getFlag(country) }{ pickCountry?<div>&#9650;</div>:<div>&#9660;</div>}
                 </div>
                 <div className='PhoneInput-country-list'
                      style={countryListDisplay}
@@ -161,7 +160,6 @@ class CountrySelect extends React.Component {
     }
 
     scrollToIndex(index) {
-        console.log(this.list);
         const numberOfItems = this.state.countryCodeList.length;
         const scrollPerItem = this.list.scrollHeight/numberOfItems;
         if(index > numberOfItems-3) {
@@ -175,13 +173,24 @@ class CountrySelect extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(this.state.searchBuffer.length > 0 
-            && this.state.searchBuffer != prevState.searchBuffer) {
+        const { pickCountry, country, selectedIndex, setSelectedIndex } = this.props;
+        const { searchBuffer, countryCodeList } = this.state;
+        if(searchBuffer.length > 0 
+            && searchBuffer != prevState.searchBuffer) {
             this.searchCountries();
             // Clear search buffer after 2 seconds
             setTimeout(() => this.setState({
                 searchBuffer: '',
             }), 2000);
+        }
+
+        if(pickCountry && pickCountry != prevProps.pickCountry) {
+            // If country changed in some external way (e.g. typing a country code), find and set index
+            if(country != countryCodeList[selectedIndex]) {
+                const newIndex = countryCodeList.findIndex((c) => c == country);
+                setSelectedIndex(newIndex);
+                this.scrollToIndex(newIndex);
+            }
         }
     }
 
@@ -216,7 +225,7 @@ export default class PhoneInput extends React.Component {
     constructor(props) {
         super(props);
 
-        const { defaultCountry } = this.props;
+        const { defaultCountry, value, defaultValue } = props;
 
         this.reverseCountryCodes = {}
         Object.keys(countryCodes).forEach(
@@ -234,9 +243,11 @@ export default class PhoneInput extends React.Component {
         this.state = {
             focused: true,
             country: defaultCountry ? defaultCountry : null,
-            value: props.value || props.defaultValue || this.defaultPhonePrefix() || '+',
             pickCountry: false,
+            selectedIndex: -1,
         };
+
+        this.state.value = value || defaultValue || this.defaultPhonePrefix() || '+';
     }
 
     componentDidMount() {
@@ -308,14 +319,12 @@ export default class PhoneInput extends React.Component {
     onCountryFocus() {
         this.setState({
             pickCountry: true,
-            selectedIndex: 0,
         });
     }
 
     onCountryBlur() {
         this.setState({
             pickCountry: false,
-            selectedIndex: -1,
         });
     }
 
@@ -350,19 +359,19 @@ export default class PhoneInput extends React.Component {
 
     onChange(event) {
         let value = event.target.value;
-
         value = this.cleanValue(value);
 
-        /*
-        if (value === '+' || value === this.defaultPhonePrefix()) {
-            value = '';
-        }*/
         if (value === '') {
             value = '+' + countryCodes[this.state.country];
+        } else if (value.match(/^\+?0/)) {
+            const c = this.state.country ? 
+                this.state.country : this.props.defaultCountry;
+            value = '+' + countryCodes[c];
+            value.replace(/^\+?0/, '+' + c);
         }
 
         let country = null;
-        for(let i = 1; i < 4; i++) {
+        for (let i = 1; i < 4; i++) {
             let val = value.slice(1, 1+i)
             country = this.reverseCountryCodes[val]
             if(country) break;
@@ -384,11 +393,14 @@ export default class PhoneInput extends React.Component {
 
     defaultPhonePrefix() {
         const { defaultCountry } = this.props;
+        const { country } = this.state;
 
         let prefix = '+';
 
-        if (defaultCountry) {
-            const countryCode = countryCodes[defaultCountry];
+        const c = country ? country : defaultCountry;
+
+        if (c) {
+            const countryCode = countryCodes[c];
 
             if (countryCode) {
                 prefix += countryCode;
@@ -401,13 +413,13 @@ export default class PhoneInput extends React.Component {
     cleanValue(value) {
         value = value || '';
 
-        const startsWithZero = /^0/.test(value);
+        const startsWithZero = /^\+?0/.test(value);
 
         // remove non-numbers
         value = (value.match(/\d/g) || []).join('')
 
         // remove leading zeroes
-        value = value.replace(/^0+/, '')
+        value = value.replace(/^\+?0+/, '')
 
         // add prefix
         if (startsWithZero) {
