@@ -221,6 +221,7 @@ export default class PhoneInput extends React.Component {
         defaultValue: React.PropTypes.string,
         value: React.PropTypes.string,
         onChange: React.PropTypes.func,
+        error: React.PropTypes.string,
     };
 
     constructor(props) {
@@ -252,8 +253,16 @@ export default class PhoneInput extends React.Component {
     }
 
     componentDidMount() {
+        let focused = false;
+        if(this.props.error) {
+            // By default, invalid phone numbers only result in a red border after focusing on the phone field.
+            focused = true;
+        }
+        const country = this.getCountry(this.state.value);
+
         this.setState({
-            focused: false,
+            focused: focused,
+            country: country,
         });
     }
 
@@ -356,10 +365,17 @@ export default class PhoneInput extends React.Component {
         });
     }
 
+    getCountry(value) {
+        let country = null;
+        for (let i = 1; i < 4; i++) {
+            let val = value.slice(1, 1+i);
+            country = this.reverseCountryCodes[val];
+            if(country) return country;
+        }
+    }
+
     onChange(event) {
         let value = event.target.value;
-
-        // Country-dependent auto-formatting
 
         value = this.cleanValue(value);
 
@@ -373,19 +389,14 @@ export default class PhoneInput extends React.Component {
                 value = value.replace(/^\+?0/, `+${countryCodes[c]}`);
             }
         }
+        const country = this.getCountry(value);
 
         const formatter = new AsYouType(this.state.country);
         // formatter.input also returns a formatted version of the phone number entered.
         // The problem is that the cursor is reset to the end of the input field whenever
         // a change is made, and correcting this is too complex at this time.
         formatter.input(value);
-        const valid = formatter.isValid();
-        let country = null;
-        for (let i = 1; i < 4; i++) {
-            let val = value.slice(1, 1+i);
-            country = this.reverseCountryCodes[val];
-            if(country) break;
-        }
+        const valid = formatter.isValid(); 
 
         const pattern = new RegExp("^\\+" + countryCodes[country] + "0+");
         if (value.match(pattern)) {
