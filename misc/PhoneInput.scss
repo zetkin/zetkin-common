@@ -1,0 +1,101 @@
+.PhoneInput-countryselect {
+    position: absolute;
+    flex: 0 0 1em;
+    vertical-align: middle;
+
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        li:hover {
+            cursor: pointer;
+        }
+    }
+}
+
+.PhoneInput-country-selected {
+    background-color: $c-brand-comp-light;
+}
+
+.PhoneInput-country-list {
+    position: fixed;
+    background-color: white;
+    height: 95vh;
+    width: 95vw;
+    top: 2.5vh;
+    left: 2.5vw;
+    z-index: 10000;
+    overflow: scroll;
+    border: 1px solid #dedede;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+
+    li {
+        padding: 1em;
+    }
+}
+
+@include large-screen {
+    .PhoneInput-country-list {
+        top: inherit;
+        left: inherit;
+        position: absolute;
+        width: 20em;
+        height: 8em;
+        margin-top: -1em;
+
+        li {
+            padding: 0.1em;
+        }
+    }
+}
+
+
+.PhoneInput-wrapper {
+    div:focus {
+        outline: none;
+    }
+}
+
+
+.PhoneInput-flag-menu {
+    display: flex;
+    margin: 0.7em 0.5em 1em 0.5em;
+
+    :hover {
+        cursor: pointer;
+    }
+
+    span {
+        align-self: center;
+        font-size: 1.5em;
+    }
+    div {
+        font-size: 0.8em;
+        align-self: center;
+    }
+}
+
+.PhoneInput-hiddenLabel {
+    flex: 1;
+}
+
+.PhoneInput-input {
+    flex: 1;
+    label {
+        padding-left: 3.1em;
+    }
+    input {
+        // This is ugly but the alternative is much more complicated
+        padding-left: 3.2em !important;
+    }
+}
+
+.PhoneInput-wrapper {
+    display: flex;
+}
+
+.PhoneInput-error {
+    border-color: $c-brand-main-orange !important;
+}

@@ -1,4 +1,6 @@
 import React from 'react';
+import { injectIntl } from 'react-intl';
+import { AsYouType } from 'libphonenumber-js/min';
 
 const countryCodes = {
     AD: 376, AE: 971, AF: 93, AL: 355, AM: 374, AO: 244, AR: 54, AT: 43, AU: 61,
@@ -30,6 +32,187 @@ const countryCodes = {
     YT: 262, ZA: 27, ZM: 260, ZW: 263,
 };
 
+const getFlag = (countryCode) => {
+    let L1 = 127482;
+    let L2 = 127475;
+
+    if(countryCode && countryCode.length == 2) {
+        L1 = countryCode.charCodeAt(0)+127397;
+        L2 = countryCode.charCodeAt(1)+127397;
+    }
+
+    return <span dangerouslySetInnerHTML={{__html: '&#' + L1 + ';&#' + L2 + ';'}} />
+}
+
+@injectIntl
+class CountrySelect extends React.Component {
+    static propTypes = {
+        country: React.PropTypes.string,
+        pickCountry: React.PropTypes.bool,
+        onFocus: React.PropTypes.func,
+        onBlur: React.PropTypes.func,
+        onCountrySelect: React.PropTypes.func,
+        setSelectedIndex: React.PropTypes.func,
+        selectedIndex: React.PropTypes.number,
+    };
+
+    constructor(props) {
+        super(props);
+        this.onKeyDown = this.onKeyDown.bind(this);
+        this.onHover = this.onHover.bind(this);
+        this.scrollToIndex = this.scrollToIndex.bind(this);
+        this.searchCountries = this.searchCountries.bind(this);
+        this.list = null;
+
+        this.state = {
+            countryCodeNames: {},
+            countryCodeList: [],
+            searchBuffer: '',
+        }
+    }
+
+    componentDidMount() {
+        let countryCodeNames = {};
+        Object.keys(countryCodes).forEach(code => {
+            countryCodeNames[code] = this.props.intl.formatMessage({id:  'misc.countries.' + code });
+        });
+        this.setState({ countryCodeNames });
+
+        const countryCodeList = ['SE', 'DK', 'NO', 'GB', '<hr>'].concat(
+            Object.keys(countryCodes).sort((a,b) => 
+                countryCodeNames[a] < countryCodeNames[b] ? -1 : 1));
+        this.setState({ countryCodeList });
+    }
+
+    render() {
+        const { country, pickCountry, onFocus, onBlur, onCountrySelect, selectedIndex } = this.props;
+
+        const countryListDisplay = {
+            display: pickCountry ? 'block' : 'none',
+        }
+
+        return (
+            <div tabIndex={-1} onFocus={ onFocus } onBlur={ onBlur } className='PhoneInput-countryselect' onKeyDown={ (e) => this.onKeyDown(e) }>
+                <div className='PhoneInput-flag-menu'>
+                    { getFlag(country) }{ pickCountry?<div>&#9650;</div>:<div>&#9660;</div>}
+                </div>
+                <div className='PhoneInput-country-list'
+                     style={countryListDisplay}
+                     ref={ (node) => this.list = node }>
+                    <ul>
+                        {
+                            this.state.countryCodeList.map((country, index) => country == '<hr>' ? <hr /> :
+                                <li 
+                                    className={ index==selectedIndex ? 'PhoneInput-country-selected':null } 
+                                    key={ index } 
+                                    onClick={ () => onCountrySelect(country) }
+                                    onMouseEnter={ () => this.onHover(index) }>
+                                        { getFlag(country, '1.2em') }
+                                        { this.state.countryCodeNames[country] } +
+                                        { countryCodes[country] }
+                                </li>
+                            )
+                        }
+                    </ul>
+                </div>
+            </div>)
+    } 
+
+    onKeyDown(event) {
+        const { selectedIndex, setSelectedIndex, onCountrySelect } = this.props;
+        const { searchBuffer, countryCodeList } = this.state;
+
+        event.preventDefault();
+
+        if(!event.altKey && !event.ctrlKey && !event.metaKey) {
+            let newIndex;
+            switch(event.key) {
+                case 'Enter':
+                    if(selectedIndex>-1) {
+                        onCountrySelect(countryCodeList[selectedIndex])
+                    }
+                    break;
+                case 'ArrowUp':
+                    newIndex = Math.max(selectedIndex-1, 0);
+                    setSelectedIndex(newIndex)
+                    this.scrollToIndex(newIndex);
+                    break;
+                case 'ArrowDown':
+                    newIndex = Math.min(selectedIndex+1, this.state.countryCodeList.length-1);
+                    setSelectedIndex(newIndex)
+                    this.scrollToIndex(newIndex);
+                    break;
+                case 'PageUp':
+                    newIndex = Math.max(selectedIndex-5, 0);
+                    setSelectedIndex(newIndex)
+                    this.scrollToIndex(newIndex);
+                    break;
+                case 'PageDown':
+                    newIndex = Math.min(selectedIndex+5, this.state.countryCodeList.length-1);
+                    setSelectedIndex(newIndex)
+                    this.scrollToIndex(newIndex);
+                    break;
+                default:
+                    this.setState({
+                        searchBuffer: searchBuffer + event.key.toLowerCase(),
+                    });
+            }
+        }
+    }
+
+    scrollToIndex(index) {
+        const numberOfItems = this.state.countryCodeList.length;
+        const scrollPerItem = this.list.scrollHeight/numberOfItems;
+        if(index > numberOfItems-3) {
+            this.list.scrollTo(0,scrollPerItem*(numberOfItems-3));
+        }
+        else if(index > 2) {
+            this.list.scrollTo(0,scrollPerItem*(index-2));
+        } else {
+            this.list.scrollTo(0,0);
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        const { pickCountry, country, selectedIndex, setSelectedIndex } = this.props;
+        const { searchBuffer, countryCodeList } = this.state;
+        if(searchBuffer.length > 0 
+            && searchBuffer != prevState.searchBuffer) {
+            this.searchCountries();
+            // Clear search buffer after 2 seconds
+            setTimeout(() => this.setState({
+                searchBuffer: '',
+            }), 2000);
+        }
+
+        if(pickCountry && pickCountry != prevProps.pickCountry) {
+            // If country changed in some external way (e.g. typing a country code), find and set index
+            if(country != countryCodeList[selectedIndex]) {
+                const newIndex = countryCodeList.findIndex((c) => c == country);
+                setSelectedIndex(newIndex);
+                this.scrollToIndex(newIndex);
+            }
+        }
+    }
+
+    searchCountries() {
+        const { searchBuffer, countryCodeNames, countryCodeList } = this.state;
+        const { setSelectedIndex } = this.props;
+        const index = countryCodeList.slice(5).findIndex((cc) => 
+            countryCodeNames[cc].slice(0,searchBuffer.length).toLowerCase() == searchBuffer);
+        if(index > -1) {
+            setSelectedIndex(index+5);
+            this.scrollToIndex(index+5);
+        }
+    }
+
+    onHover(index) {
+        const { selectedIndex, setSelectedIndex } = this.props;
+        console.log('setting index, old ' + selectedIndex + ', new ' + index)
+        setSelectedIndex(index)
+    }
+}
+
 export default class PhoneInput extends React.Component {
     static propTypes = {
         className: React.PropTypes.string,
@@ -38,24 +221,48 @@ export default class PhoneInput extends React.Component {
         defaultValue: React.PropTypes.string,
         value: React.PropTypes.string,
         onChange: React.PropTypes.func,
+        error: React.PropTypes.string,
     };
 
     constructor(props) {
         super(props);
 
+        const { defaultCountry, value, defaultValue } = props;
+
+        this.reverseCountryCodes = {}
+        Object.keys(countryCodes).forEach(
+            country => this.reverseCountryCodes[ countryCodes[country] ] = country
+        );
+
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
+        this.onCountryFocus = this.onCountryFocus.bind(this);
+        this.onCountryBlur = this.onCountryBlur.bind(this);
+        this.onCountrySelect = this.onCountrySelect.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.setSelectedIndex = this.setSelectedIndex.bind(this);
 
         this.state = {
-            focused: true,
-            value: props.value || props.defaultValue || '+',
+            focused: false,
+            country: defaultCountry ? defaultCountry : null,
+            pickCountry: false,
+            selectedIndex: -1,
         };
+
+        this.state.value = value || defaultValue || this.defaultPhonePrefix() || '+';
     }
 
     componentDidMount() {
+        let focused = false;
+        if(this.props.error) {
+            // By default, invalid phone numbers only result in a red border after focusing on the phone field.
+            focused = true;
+        }
+        const country = this.getCountry(this.state.value);
+
         this.setState({
-            focused: false,
+            focused: focused,
+            country: country,
         });
     }
 
@@ -70,39 +277,101 @@ export default class PhoneInput extends React.Component {
         const {
             focused,
             value: stateValue,
+            country,
+            pickCountry,
+            selectedIndex,
+            valid,
         } = this.state;
 
         let value = propValue || stateValue;
 
-        value = this.cleanValue(value);
-
-        if (!focused && (value === '+' || value === this.defaultPhonePrefix())) {
-            value = '';
-        }
-
         return (
-            <input
-                className={className}
-                name={name}
-                type="tel"
-                placeholder={placeholder}
-                value={value}
-                onFocus={this.onFocus}
-                onBlur={this.onBlur}
-                onChange={this.onChange}
-            />
+            <div className="SignUpForm-textBox PhoneInput-wrapper">
+                <CountrySelect 
+                    country={ country }
+                    pickCountry={ pickCountry }
+                    selectedIndex={ selectedIndex }
+                    onFocus={ this.onCountryFocus }
+                    onBlur={ this.onCountryBlur }
+                    onKeyDown={ this.onCountryKeyDown }
+                    onCountrySelect={ this.onCountrySelect }
+                    setSelectedIndex={ this.setSelectedIndex } />
+                <div className="PhoneInput-input">
+                    <label className="SignUpForm-hiddenLabel" htmlFor="phone">
+                        { placeholder }</label>
+                    <input
+                        ref={ (node) => this.phoneInput=node }
+                        className={ `${className} ${ focused && !valid ? "PhoneInput-error" : "" }` }
+                        name={name}
+                        type="tel"
+                        placeholder={placeholder}
+                        value={value}
+                        onFocus={this.onFocus}
+                        onBlur={this.onBlur}
+                        onChange={this.onChange}
+                    />
+                </div>
+            </div>
         );
     }
 
     onFocus() {
+    }
+
+    onBlur() {
         this.setState({
             focused: true,
         });
     }
-    onBlur() {
+
+    onCountryFocus() {
         this.setState({
-            focused: false,
+            pickCountry: true,
         });
+    }
+
+    onCountryBlur() {
+        this.setState({
+            pickCountry: false,
+        });
+    }
+
+    onCountrySelect(country) {
+        if(country != '<hr>') {
+            const oldCountry = this.state.country;
+            this.setState({
+                country: country,
+                pickCountry: false,
+            });
+            let value = this.state.value;
+            const oldCountryCode = countryCodes[oldCountry];
+            const newCountryCode = countryCodes[country];
+            if(value.startsWith('+' + oldCountryCode)) {
+                value = value.replace('+' + oldCountryCode, '+' + newCountryCode);
+            } else {
+                // We will make a guess and replace the first three characters
+                value = value.substring(3);
+                value = '+' + newCountryCode + value;
+            }
+
+            this.setState({ value });
+            this.phoneInput.focus();
+        }
+    } 
+ 
+    setSelectedIndex(index) {
+        this.setState({
+            selectedIndex: index,
+        });
+    }
+
+    getCountry(value) {
+        let country = null;
+        for (let i = 1; i < 4; i++) {
+            let val = value.slice(1, 1+i);
+            country = this.reverseCountryCodes[val];
+            if(country) return country;
+        }
     }
 
     onChange(event) {
@@ -110,12 +379,34 @@ export default class PhoneInput extends React.Component {
 
         value = this.cleanValue(value);
 
-        if (value === '+' || value === this.defaultPhonePrefix()) {
-            value = '';
+        const c = this.state.country ? 
+            this.state.country : this.props.defaultCountry;
+
+        if (value === '') {
+            value = '+' + countryCodes[this.state.country];
+        } else if (value.match(/^\+?0/)) {
+            if(c) {
+                value = value.replace(/^\+?0/, `+${countryCodes[c]}`);
+            }
+        }
+        const country = this.getCountry(value);
+
+        const formatter = new AsYouType(this.state.country);
+        // formatter.input also returns a formatted version of the phone number entered.
+        // The problem is that the cursor is reset to the end of the input field whenever
+        // a change is made, and correcting this is too complex at this time.
+        formatter.input(value);
+        const valid = formatter.isValid(); 
+
+        const pattern = new RegExp("^\\+" + countryCodes[country] + "0+");
+        if (value.match(pattern)) {
+            value = value.replace(pattern, "+" + countryCodes[country])
         }
 
         this.setState({
             value,
+            country,
+            valid,
         })
 
         // This seems to work, but I am not sure what the official stance is on
@@ -129,11 +420,14 @@ export default class PhoneInput extends React.Component {
 
     defaultPhonePrefix() {
         const { defaultCountry } = this.props;
+        const { country } = this.state;
 
         let prefix = '+';
 
-        if (defaultCountry) {
-            const countryCode = countryCodes[defaultCountry];
+        const c = country ? country : defaultCountry;
+
+        if (c) {
+            const countryCode = countryCodes[c];
 
             if (countryCode) {
                 prefix += countryCode;
@@ -146,13 +440,13 @@ export default class PhoneInput extends React.Component {
     cleanValue(value) {
         value = value || '';
 
-        const startsWithZero = /^0/.test(value);
+        const startsWithZero = /^\+?0/.test(value);
 
         // remove non-numbers
         value = (value.match(/\d/g) || []).join('')
 
         // remove leading zeroes
-        value = value.replace(/^0+/, '')
+        value = value.replace(/^\+?0+/, '')
 
         // add prefix
         if (startsWithZero) {
