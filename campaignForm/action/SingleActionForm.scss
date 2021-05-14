@@ -28,6 +28,7 @@
         text-overflow: ellipsis;
         max-height: 3em;
         transition: max-height 0.5s;
+        margin-right: 1.5em;
 
         &:after {
             @include icon($fa-var-arrow-right);
