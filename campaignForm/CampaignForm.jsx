@@ -1,4 +1,4 @@
-import { FormattedDate, injectIntl, FormattedMessage as Msg }
+import { injectIntl, FormattedMessage as Msg }
     from 'react-intl';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -7,6 +7,7 @@ import ActionInfoSection from './action/ActionInfoSection';
 import ActionFilterSummary from './filter/ActionFilterSummary';
 import ActionFilterModal from './filter/ActionFilterModal';
 import CampaignCalendar from './calendar/CampaignCalendar';
+import FormattedDate from '../misc/ClientSideFormattedDate';
 import SingleActionForm from './action/SingleActionForm';
 import MultiShiftActionForm from './action/MultiShiftActionForm';
 import MultiLocationActionForm from './action/MultiLocationActionForm';
