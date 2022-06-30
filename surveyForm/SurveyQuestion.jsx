@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from '../../utils/PropTypes';
 import TextWidget from './widgets/TextWidget';
 import OptionsWidget from './widgets/OptionsWidget';
+import PersonFieldWidget from './widgets/PersonFieldWidget';
 
 
 export default class SurveyQuestion extends React.Component {
@@ -35,6 +36,12 @@ export default class SurveyQuestion extends React.Component {
         else if (question.get('response_type') == 'text') {
             responseWidget = (
                 <TextWidget name={ name } question={ question }
+                    response={ this.props.response }
+                    onChange={ this.onChange.bind(this) }/>
+            );
+        } else if (question.get('response_type') == 'person_field') {
+            responseWidget = (
+                <PersonFieldWidget name={ name } question={ question }
                     response={ this.props.response }
                     onChange={ this.onChange.bind(this) }/>
             );

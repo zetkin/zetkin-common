@@ -9,13 +9,15 @@ export default class TextWidget extends React.Component {
         question: PropTypes.map.isRequired,
         onChange: PropTypes.func,
         response: PropTypes.map,
+        initialValue: PropTypes.string,
     };
 
     constructor(props) {
         super(props);
 
+        const initialValue = this.props.initialValue || '';
         this.state = {
-            value: props.response? props.response.get('response') : '',
+            value: props.response? props.response.get('response') : initialValue,
         };
     }
 
