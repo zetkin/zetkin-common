@@ -25,12 +25,15 @@ export default class PersonFieldWidget extends React.Component {
         name: PropTypes.string.isRequired,
         question: PropTypes.map.isRequired,
         onChange: PropTypes.func,
+        onInitialValue: PropTypes.func,
         response: PropTypes.map,
     };
 
-    render() {
-        let initialValue;
+    constructor(props) {
+        super(props);
+
         // This only applies to when the survey is used in a call
+        let initialValue;
         if (this.props.calls && this.props.lane) {
             const callId = this.props.lane.get('callId')
             const target = this.props.calls.getIn(['callList', 'items', callId, 'target'])
@@ -46,18 +49,32 @@ export default class PersonFieldWidget extends React.Component {
                 // Check for the personField in the custom fields
                 const field = target.get('person_fields').find(f => f.get('slug') == personField);
                 if (field) {
-                    initialValue = field.get('value')
+                    initialValue = field.get('value');
                 }
             }
         }
 
+        this.state = {
+            initialValue: initialValue,
+        }
+
+        if (initialValue) {
+            this.props.onInitialValue({ response: initialValue });
+        }
+    }
+
+    componentWillMount() {
+     
+    }
+
+    render() { 
         return (
             <TextWidget
                 name={ this.props.name }
                 question={ this.props.question }
                 onChange={ this.props.onChange }
                 response={ this.props.response }
-                initialValue={ initialValue } />
+                initialValue={ this.state.initialValue } />
         );
     }
 }

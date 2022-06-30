@@ -30,6 +30,7 @@ export default class SurveyElement extends React.Component {
                     question={ element.get('question') }
                     response={ this.props.response }
                     onResponse={ this.props.onResponse }
+                    onInitialValue={ this.props.onInitialValue }
                     />
             );
         }

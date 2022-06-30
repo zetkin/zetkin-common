@@ -16,6 +16,7 @@ export default class TextWidget extends React.Component {
         super(props);
 
         const initialValue = this.props.initialValue || '';
+
         this.state = {
             value: props.response? props.response.get('response') : initialValue,
         };

@@ -30,6 +30,9 @@ export default class SurveyForm extends React.Component {
             valid: true,
             privacyApproved: false,
         };
+
+        // Temporary store for initial values
+        this.pendingValues = [];
     }
 
     render() {
@@ -46,6 +49,7 @@ export default class SurveyForm extends React.Component {
             return (
                 <SurveyElement key={ id }
                     onResponse={ this.onResponse.bind(this, id) }
+                    onInitialValue={ this.onInitialValue.bind(this, id) }
                     response={ response }
                     element={ elem }
                     />
@@ -138,7 +142,24 @@ export default class SurveyForm extends React.Component {
 
     onResponse(elemId, response) {
         if (this.props.onResponse) {
+            if (this.pendingValues.length) {
+                // If there are any pending initial values to set, do it now
+                for (const pending of this.pendingValues) {
+                    this.props.onResponse(pending.id, pending.value);
+                }
+                this.pendingValues = []
+            }
+
             this.props.onResponse(elemId, response);
         }
+    }
+    
+    /* 
+     * Store initial values locally until an actual response is input.
+     * This is because call considers wheter to submit a survey depending on the state of the survey,
+     * and we don't want the survey to be sumitted if the user did not take any action.
+     */
+    onInitialValue(elemId, value) {
+        this.pendingValues.push({ id: elemId, value: value })
     }
 }

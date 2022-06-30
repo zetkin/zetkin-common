@@ -43,7 +43,8 @@ export default class SurveyQuestion extends React.Component {
             responseWidget = (
                 <PersonFieldWidget name={ name } question={ question }
                     response={ this.props.response }
-                    onChange={ this.onChange.bind(this) }/>
+                    onChange={ this.onChange.bind(this) }
+                    onInitialValue={ this.props.onInitialValue } />
             );
         }
 
