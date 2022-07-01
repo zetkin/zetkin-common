@@ -32,7 +32,7 @@ export default class SurveyQuestion extends React.Component {
                     onChange={ this.onChange.bind(this) }/>
             );
         }
-        else if (question.get('response_type') == 'text') {
+        else if (question.get('response_type') == 'text' || question.get('response_type') == 'person_field') {
             responseWidget = (
                 <TextWidget name={ name } question={ question }
                     response={ this.props.response }
