@@ -30,6 +30,7 @@ export default class CampaignForm extends React.Component {
         onResponse: PropTypes.func,
         orgList: PropTypes.map.isRequired,
         scrollContainer: PropTypes.any,
+        filter: PropTypes.array,
     };
 
     constructor(props) {
@@ -70,6 +71,10 @@ export default class CampaignForm extends React.Component {
                 }
             }
         };
+
+        if (this.props.filter) {
+            this.onFilterChange('filterActivities', this.props.filter);
+        }
 
         window.addEventListener('scroll', this.onPageScroll);
 
@@ -526,6 +531,9 @@ export default class CampaignForm extends React.Component {
         this.setState({
             [prop]: selected,
         });
+        if (this.props.onFilterChange) {
+            this.props.onFilterChange(selected);
+        }
     }
 
     onFilterReset(prop) {
@@ -533,6 +541,9 @@ export default class CampaignForm extends React.Component {
             [prop]: [],
             openFilter: null,
         });
+        if (this.props.onFilterChange) {
+            this.props.onFilterChange(null);
+        }
     }
 
     onFilterOpen(type) {
