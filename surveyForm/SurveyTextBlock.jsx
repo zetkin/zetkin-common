@@ -2,6 +2,7 @@ import React from 'react';
 import linkify from 'linkifyjs/html';
 
 import PropTypes from '../../utils/PropTypes';
+import CleanHtml from '../misc/CleanHtml';
 
 
 export default class SurveyTextBlock extends React.Component {
@@ -22,7 +23,7 @@ export default class SurveyTextBlock extends React.Component {
         if (block.get('content')) {
             let contentWithLinks = linkify(block.get('content'));
 
-            p = <p dangerouslySetInnerHTML={{ __html: contentWithLinks }}/>;
+            p = <CleanHtml component="p" dirtyHtml={contentWithLinks}/>;
         }
 
         return (
