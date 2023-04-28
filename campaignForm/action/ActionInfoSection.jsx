@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { FormattedMessage as Msg } from 'react-intl';
+import { injectIntl, FormattedMessage as Msg } from 'react-intl';
 
 import PropTypes from '../../../utils/PropTypes';
 
@@ -8,6 +8,7 @@ import ActionFormInfoLabel from './ActionFormInfoLabel';
 import ResponseWidget from './ResponseWidget';
 import ActionMap from './ActionMap';
 
+@injectIntl
 export default class ActionInfoSection extends React.Component {
     static propTypes = {
         action: PropTypes.object.isRequired,
@@ -45,14 +46,18 @@ export default class ActionInfoSection extends React.Component {
         + '/campaigns/' + action.getIn(['campaign', 'id']);
 
         let location = action.getIn(['location', 'title']);
+        if (!location) {
+            location = this.props.intl.formatMessage({id:'No physical location'})
+        }
 
         let infoText = action.get('info_text');
 
-        let int = action.getIn('location', 'lat');
-
-        const latlng = {
-            lat: action.getIn(['location', 'lat']),
-            lng: action.getIn(['location', 'lng']),
+        let latlng;
+        if (action.get('location')) {
+            latlng = {
+                lat: action.getIn(['location', 'lat']),
+                lng: action.getIn(['location', 'lng']),
+            };
         };
 
         let currentNeed;
@@ -98,10 +103,11 @@ export default class ActionInfoSection extends React.Component {
                     onUndo={ this.props.onUndo }
                     />
 
+                { latlng ? 
                 <ActionMap key="map"
                     zoom={ 14 }
                     pendingLocation={ latlng }
-                    />
+                    /> : null }
 
                 <a key="close"
                     className="ActionInfoSection-closeButton"

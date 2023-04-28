@@ -1,11 +1,12 @@
 import React from 'react';
-import { FormattedMessage as Msg } from 'react-intl';
+import { injectIntl, FormattedMessage as Msg } from 'react-intl';
 
 import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
 import ActionFormInfoLabel from './ActionFormInfoLabel';
 import MultiActionFormItem from './MultiActionFormItem';
 
+@injectIntl
 export default class MultiLocationActionForm extends React.Component {
     static propTypes = {
         actions: PropTypes.array.isRequired,
@@ -31,6 +32,9 @@ export default class MultiLocationActionForm extends React.Component {
         let organization = orgItem.get('title');
 
         let title = actions[0].get('title') ? actions[0].get('title') : actions[0].getIn(['activity', 'title']);
+        if (!title) {
+            title = this.props.intl.formatMessage({ id: 'campaignForm.action.noTitle' });
+        }
 
         let content;
 
@@ -38,7 +42,7 @@ export default class MultiLocationActionForm extends React.Component {
 
         let locItems = actions.map(action => {
             let id = action.get('id');
-            let locLabel = action.getIn(['location', 'title']);
+            let locLabel = action.getIn(['location', 'title']) ? action.getIn(['location', 'title']) : this.props.intl.formatMessage({id: 'campaignForm.action.noLocation'});
 
             let isBooked = this.props.bookings
                 .indexOf(action.get('id').toString()) >= 0;

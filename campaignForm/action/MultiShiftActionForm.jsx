@@ -30,6 +30,9 @@ export default class MultiShiftActionForm extends React.Component {
                 org.get('id') == actions[0].get('org_id'));
         let organization = orgItem.get('title');
         let title = actions[0].get('title') ? actions[0].get('title') : actions[0].getIn(['activity', 'title'])
+        if (!title) {
+            title = this.props.intl.formatMessage({ id: 'campaignForm.action.noTitle' });
+        }
 
         let hasNeed = false;
 
@@ -88,6 +91,11 @@ export default class MultiShiftActionForm extends React.Component {
                     label={ currentNeedLabel }/>;
         }
 
+        let location = actions[0].getIn('location', 'title');
+        if (!location) {
+            location = this.props.intl.formatMessage({ id: 'campaignForm.action.noLocation' });
+        }
+
         return (
             <div className="MultiShiftActionForm">
                 <ActionFormTitle
@@ -98,7 +106,7 @@ export default class MultiShiftActionForm extends React.Component {
                 <ActionFormInfoLabel className="campaign"
                     label={ actions[0].getIn(['campaign', 'title']) }/>
                 <ActionFormInfoLabel className="location"
-                        label={ actions[0].getIn(['location', 'title']) }/>
+                        label={ location }/>
                 <ActionFormInfoLabel className="date"
                     label={ firstStartTime.format('{yyyy}-{MM}-{dd}') }/>
 

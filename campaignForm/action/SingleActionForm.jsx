@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormattedMessage as Msg } from 'react-intl';
+import { FormattedMessage as Msg, injectIntl } from 'react-intl';
 
 import PropTypes from '../../../utils/PropTypes';
 import ActionFormTitle from './ActionFormTitle';
@@ -7,6 +7,7 @@ import ActionFormInfoLabel from './ActionFormInfoLabel';
 import ResponseWidget from './ResponseWidget';
 import Button from '../../misc/Button';
 
+@injectIntl
 export default class SingleActionForm extends React.Component {
     static propTypes = {
         onChange: React.PropTypes.func,
@@ -23,6 +24,9 @@ export default class SingleActionForm extends React.Component {
         const { orgList } = this.props;
         let action = this.props.action;
         let title = action.get('title') ? action.get('title') : action.getIn(['activity', 'title']);
+        if (!title) {
+            title = this.props.intl.formatMessage({ id: 'campaignForm.action.noTitle' });
+        }
 
         let startTime = Date.create(action.get('start_time'),
             { fromUTC: true, setUTC: true });
@@ -39,7 +43,7 @@ export default class SingleActionForm extends React.Component {
 
         let campaign = action.getIn(['campaign', 'title']);
 
-        let location = action.getIn(['location', 'title']);
+        let location = action.getIn(['location', 'title']) || this.props.intl.formatMessage({ id: 'campaignForm.action.noLocation'});
 
         let infoText = null;
         if (action.get('info_text')) {
