@@ -26,6 +26,9 @@ export default class ActionInfoSection extends React.Component {
         let action = this.props.action;
 
         let title = action.get('title') ? action.get('title') : action.getIn(['activity', 'title']);
+        if (!title) {
+            title = this.props.intl.formatMessage({ id: 'campaignForm.action.noTitle' });
+        }
 
         let startTime = Date.create(action.get('start_time'),
             { fromUTC: true, setUTC: true });
@@ -47,7 +50,7 @@ export default class ActionInfoSection extends React.Component {
 
         let location = action.getIn(['location', 'title']);
         if (!location) {
-            location = this.props.intl.formatMessage({id:'No physical location'})
+            location = this.props.intl.formatMessage({id: 'campaignForm.action.noLocation'});
         }
 
         let infoText = action.get('info_text');
