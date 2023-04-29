@@ -152,16 +152,18 @@ export default class CampaignForm extends React.Component {
             if (this.state.browserHasJavascript) {
                 filteredActions.forEach(action => {
                     const aStr = action.getIn(['activity', 'title']);
-                    const aKey = aStr.toLowerCase();
+                    if (aStr) {
+                        const aKey = aStr.toLowerCase();
 
-                    if (!activities[aKey]) {
-                        activities[aKey] = {
-                            title: aStr,
-                            actionCount: 0,
-                        };
+                        if (!activities[aKey]) {
+                            activities[aKey] = {
+                                title: aStr,
+                                actionCount: 0,
+                            };
+                        }
+
+                        activities[aKey].actionCount++;
                     }
-
-                    activities[aKey].actionCount++;
                 });
 
                 if (this.props.activityFilter !== false && Object.keys(activities).length) {
