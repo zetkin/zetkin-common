@@ -19,6 +19,22 @@ export default class OptionsWidget extends React.Component {
         };
     }
 
+    componentWillMount() {
+        // If the type is select, an option has already been selected by default.
+        const question = this.props.question;
+        const type = question.getIn(['response_config', 'widget_type']);
+        if (type == 'select') {
+            const value = this.state.value? this.state.value[0] : null;
+            if(!value) {
+                const defaultValue = [question.getIn(['options', 0, 'id'])]
+                this.setState({ value: defaultValue });
+                if (this.props.onChange) {
+                    this.props.onChange(defaultValue);
+                }
+            }
+        }
+    }
+
     componentwillReceiveProps(nextProps) {
         this.setState({
             value: nextProps.response?
