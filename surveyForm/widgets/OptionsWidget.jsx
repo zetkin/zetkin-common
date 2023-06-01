@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormattedMessage as Msg, injectIntl } from 'react-intl';
+import { injectIntl } from 'react-intl';
 
 import PropTypes from '../../../utils/PropTypes';
 
@@ -47,8 +47,8 @@ export default class OptionsWidget extends React.Component {
 
             // First option is always the null option
             optionItems = optionItems.unshift(
-                <option key={'null'} value={ null }>
-                    <Msg id="surveyForm.select.default" />
+                <option key={'null'} value={ 'null' }>
+                    { this.props.intl.formatMessage({id: 'surveyForm.select.default'}) }
                 </option>
             )
 
@@ -94,7 +94,7 @@ export default class OptionsWidget extends React.Component {
 
     onSelectChange(ev) {
         let value;
-        if (ev.target.value != null) {
+        if (ev.target.value == 'null') {
             // The API does not accept a null option, no choice is an empty array
             value = [];
         } else {
