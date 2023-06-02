@@ -1,8 +1,10 @@
 import React from 'react';
+import { injectIntl } from 'react-intl';
 
 import PropTypes from '../../../utils/PropTypes';
 
 
+@injectIntl
 export default class OptionsWidget extends React.Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
@@ -42,6 +44,13 @@ export default class OptionsWidget extends React.Component {
                     </option>
                 );
             });
+
+            // First option is always the null option
+            optionItems = optionItems.unshift(
+                <option key={'null'} value={ 'null' }>
+                    { this.props.intl.formatMessage({id: 'surveyForm.select.default'}) }
+                </option>
+            )
 
             return (
                 <div className="OptionsWidget">
@@ -84,7 +93,13 @@ export default class OptionsWidget extends React.Component {
     }
 
     onSelectChange(ev) {
-        let value = [ev.target.value];
+        let value;
+        if (ev.target.value == 'null') {
+            // The API does not accept a null option, no choice is an empty array
+            value = [];
+        } else {
+            value = [ev.target.value]
+        }
 
         this.setState({ value });
 
