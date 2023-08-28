@@ -91,7 +91,7 @@ export default class MultiShiftActionForm extends React.Component {
                     label={ currentNeedLabel }/>;
         }
 
-        let location = actions[0].getIn('location', 'title');
+        let location = actions[0].getIn(['location', 'title']);
         if (!location) {
             location = this.props.intl.formatMessage({ id: 'campaignForm.action.noLocation' });
         }
