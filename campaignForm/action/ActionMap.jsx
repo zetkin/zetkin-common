@@ -1,89 +1,44 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 export default class ActionMap extends React.Component {
     static propTypes = {
-        locations: React.PropTypes.array,
-        style: React.PropTypes.object,
+        pendingLocaton: React.PropTypes.object,
         zoom: React.PropTypes.number,
-    };
-
-    componentDidMount() {
-        var ctrDOMNode = ReactDOM.findDOMNode(this.refs.mapContainer);
-
-        var mapOptions = {
-            center: this.props.pendingLocation,
-            disableDefaultUI: true,
-            zoomControl: true,
-            zoom: this.props.zoom || 4,
-        };
-
-        this.map = new google.maps.Map(ctrDOMNode, mapOptions);
-
-        this.markers = [];
-
-        this.resetMarkers();
     }
 
-    componentWillUnmount() {
-        var marker;
-        // Remove old markers
-        while (marker = this.markers.pop()) {
-            marker.setMap(null);
-            google.maps.event.clearInstanceListeners(marker);
-        }
+    componentDidMount() {
+        this.loadLeafletScript().then(() => {
+            this.initMap();
+        });
+    }
+
+    initMap() {
+        const {lat, lng} = this.props.pendingLocation;
+        const map = L.map('map').setView([lat, lng], this.props.zoom);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.marker([lat, lng]).addTo(map);
+    }
+
+    loadLeafletScript() {
+        return new Promise((resolve, reject) => {
+            if (typeof L === 'undefined') {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                document.head.appendChild(link);
+
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.body.appendChild(script);
+            } else {
+                resolve();
+            }
+        });
     }
 
     render() {
-        return (
-            <div className="ActionMap"
-                ref="mapContainer" style={ this.props.style }/>
-        )
-    }
-
-    resetMarkers() {
-        var i;
-        var marker;
-        var bounds;
-
-        var locations = this.props.locations;
-        // Remove old markers
-        while (marker = this.markers.pop()) {
-            marker.setMap(null);
-            google.maps.event.clearInstanceListeners(marker);
-        }
-
-        var pendingId;
-        if (this.props.pendingLocation) {
-            this.createMarker({data: this.props.pendingLocation});
-            pendingId = this.props.pendingLocation.id;
-
-            this.map.setZoom(this.props.zoom || 16);
-            this.map.setCenter(new google.maps.LatLng(
-                this.props.pendingLocation.lat,
-                this.props.pendingLocation.lng));
-        }
-
-        if (locations) {
-            for (i = 0; i < locations.length; i++) {
-                if (pendingId !== locations[i].data.id) {
-                    this.createMarker(locations[i], false, bounds);
-                }
-            }
-        }
-    }
-
-    createMarker(loc, bounds) {
-        var marker;
-        var latLng = new google.maps.LatLng(loc.data.lat, loc.data.lng);
-
-        marker = new google.maps.Marker({
-            position: latLng,
-            map: this.map,
-            draggable: false,
-            title: loc.data.title,
-        });
-
-        this.markers.push(marker);
+        return <div id="map" style={{height: "50%", width: "100%"}}></div>
     }
 }
