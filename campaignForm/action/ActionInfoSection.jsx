@@ -98,13 +98,13 @@ export default class ActionInfoSection extends React.Component {
                             { infoText }
                         </p>
                     </div>
-                </div>
                 <ResponseWidget action={ this.props.action }
                     isBooked={ this.props.isBooked }
                     response={ this.props.response }
                     onSignUp={ this.props.onSignUp }
                     onUndo={ this.props.onUndo }
                     />
+                </div>
 
                 { latlng ? 
                 <ActionMap key="map"
