@@ -98,24 +98,24 @@ export default class ActionInfoSection extends React.Component {
                             { infoText }
                         </p>
                     </div>
-                <ResponseWidget action={ this.props.action }
-                    isBooked={ this.props.isBooked }
-                    response={ this.props.response }
-                    onSignUp={ this.props.onSignUp }
-                    onUndo={ this.props.onUndo }
-                    />
+                    <ResponseWidget action={ this.props.action }
+                        isBooked={ this.props.isBooked }
+                        response={ this.props.response }
+                        onSignUp={ this.props.onSignUp }
+                        onUndo={ this.props.onUndo }
+                        />
+
+                    { latlng ? 
+                    <ActionMap key="map"
+                        zoom={ 14 }
+                        pendingLocation={ latlng }
+                        /> : null }
+
+                    <a key="close"
+                        className="ActionInfoSection-closeButton"
+                        onClick={ this.props.onClose }
+                        />
                 </div>
-
-                { latlng ? 
-                <ActionMap key="map"
-                    zoom={ 14 }
-                    pendingLocation={ latlng }
-                    /> : null }
-
-                <a key="close"
-                    className="ActionInfoSection-closeButton"
-                    onClick={ this.props.onClose }
-                    />
             </div>
         );
     }
