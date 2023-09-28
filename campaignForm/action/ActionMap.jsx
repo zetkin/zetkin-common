@@ -39,6 +39,6 @@ export default class ActionMap extends React.Component {
     }
 
     render() {
-        return <div id="map" style={{height: "50%", width: "100%"}}></div>
+        return <div id="map" style={{height: 500 , width: "100%"}}></div>
     }
 }
