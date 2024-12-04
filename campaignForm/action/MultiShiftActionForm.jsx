@@ -15,6 +15,7 @@ const mapStateToProps = state => ({
 });
 
 @connect(mapStateToProps)
+@injectIntl
 export default class MultiShiftActionForm extends React.Component {
     static propTypes = {
         actions: PropTypes.array.isRequired,
